@@ -1,0 +1,135 @@
+@import "tailwindcss";
+
+body {
+  background:
+    radial-gradient(circle at top left, rgba(255, 255, 255, 0.9), transparent 22%),
+    linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+  color: #0f172a;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+.chat-conversations {
+  background: transparent !important;
+}
+
+.chat-conversations .ant-conversations-list {
+  gap: 8px;
+}
+
+.chat-conversations .ant-conversations-item {
+  min-height: 68px;
+  border-radius: 18px;
+  background: #ffffff;
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  padding-inline: 14px;
+  transition:
+    border-color 160ms ease,
+    background-color 160ms ease,
+    transform 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.chat-conversations .ant-conversations-item:hover {
+  background: #ffffff;
+  border-color: rgba(148, 163, 184, 0.65);
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
+  transform: translateY(-1px);
+}
+
+.chat-conversations .ant-conversations-item-active {
+  background: #eef4ff !important;
+  border-color: #c7d7fe !important;
+  box-shadow: inset 0 0 0 1px rgba(148, 163, 184, 0.06);
+}
+
+.chat-conversations .ant-conversations-item-active .ant-conversations-label,
+.chat-conversations .ant-conversations-item-active .ant-conversations-icon {
+  color: #0f172a !important;
+}
+
+.chat-sender .ant-sender {
+  border: 0 !important;
+  box-shadow: none !important;
+  background: transparent !important;
+}
+
+.chat-sender .ant-sender-content {
+  position: relative !important;
+  align-items: stretch !important;
+}
+
+.chat-sender .ant-sender-input {
+  border-radius: 22px !important;
+  box-shadow: none !important;
+}
+
+.chat-sender .ant-sender-input:focus-within {
+  border-color: #94a3b8 !important;
+  box-shadow: 0 0 0 4px rgba(148, 163, 184, 0.12) !important;
+}
+
+.chat-sender .ant-sender-suffix {
+  position: absolute !important;
+  right: 18px;
+  bottom: 18px;
+  z-index: 2;
+}
+
+.chat-composer-action {
+  pointer-events: auto;
+  transition:
+    background-color 160ms ease,
+    color 160ms ease,
+    opacity 160ms ease !important;
+}
+
+.chat-composer-action-disabled,
+.chat-composer-action-disabled:hover,
+.chat-composer-action-disabled:focus,
+.chat-composer-action-disabled:active {
+  background: #e2e8f0 !important;
+  color: #94a3b8 !important;
+  cursor: not-allowed !important;
+  box-shadow: none !important;
+}
+
+.chat-composer-action.ant-btn:disabled,
+.chat-composer-action.ant-btn:disabled:hover {
+  background: #e2e8f0 !important;
+  color: #94a3b8 !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+}
+
+.chat-message-scroll,
+.chat-conversations {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(148, 163, 184, 0.7) transparent;
+}
+
+.chat-message-scroll::-webkit-scrollbar,
+.chat-conversations::-webkit-scrollbar {
+  width: 8px;
+}
+
+.chat-message-scroll::-webkit-scrollbar-thumb,
+.chat-conversations::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.55);
+  border-radius: 999px;
+}
+
+.chat-message-scroll::-webkit-scrollbar-track,
+.chat-conversations::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.chat-bubble-list .ant-bubble-list {
+  width: 100%;
+}
+
+.chat-bubble-list .ant-bubble-list-item {
+  width: 100%;
+}
