@@ -55,8 +55,10 @@ export default function CanvasList() {
       title: '画布名称',
       dataIndex: 'name',
       key: 'name',
+      width: 260,
+      ellipsis: true,
       render: (name: string, record: CanvasSummary) => (
-        <a onClick={() => navigate(`/canvas?id=${record.id}`)}>{name}</a>
+        <a className="block truncate" onClick={() => navigate(`/canvas?id=${record.id}`)}>{name}</a>
       ),
     },
     {
@@ -84,9 +86,9 @@ export default function CanvasList() {
     {
       title: '操作',
       key: 'actions',
-      width: 160,
+      width: 60,
       render: (_: unknown, record: CanvasSummary) => (
-        <span className="flex gap-2">
+        <span className="flex gap-1">
           <Button type="link" size="small" onClick={() => navigate(`/canvas?id=${record.id}`)}>
             编辑
           </Button>
@@ -105,14 +107,13 @@ export default function CanvasList() {
       <div className="mb-4 flex items-center gap-3">
         <Input
           placeholder="按名称搜索"
-          prefix={<SearchOutlined />}
           value={keyword}
           onChange={(e) => setKeyword(e.target.value)}
           onPressEnter={handleSearch}
           allowClear
-          style={{ width: 260 }}
+          style={{ width: 360 }}
         />
-        <Button icon={<SearchOutlined />} onClick={handleSearch}>
+        <Button type="primary" icon={<SearchOutlined />} onClick={handleSearch}>
           搜索
         </Button>
         <Button className="ml-auto" type="primary" icon={<PlusOutlined />} onClick={() => navigate('/canvas')}>

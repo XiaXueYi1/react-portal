@@ -1,11 +1,13 @@
 import {
+  ApartmentOutlined,
+  BarChartOutlined,
   HomeOutlined,
-  LayoutOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
   MessageOutlined,
   MoonOutlined,
   SunOutlined,
+  UnorderedListOutlined,
 } from '@ant-design/icons'
 import { Menu, Switch } from 'antd'
 import { Outlet, useLocation, useNavigate } from 'react-router'
@@ -13,9 +15,9 @@ import { useAppStore } from '@/store'
 
 const menuItems = [
   { key: '/home', icon: <HomeOutlined />, label: '首页' },
-  { key: '/canvas', icon: <LayoutOutlined />, label: '画布' },
-  { key: '/canvas-list', icon: <LayoutOutlined />, label: '画布管理' },
-  { key: '/charts', icon: <LayoutOutlined />, label: '图表' },
+  { key: '/canvas', icon: <ApartmentOutlined />, label: '画布' },
+  { key: '/canvas-list', icon: <UnorderedListOutlined />, label: '画布管理' },
+  { key: '/charts', icon: <BarChartOutlined />, label: '图表' },
   { key: '/chat', icon: <MessageOutlined />, label: 'AI 对话' },
 ]
 
