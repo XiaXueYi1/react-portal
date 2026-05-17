@@ -1,69 +1,50 @@
 import { useEffect, useState } from 'react'
-import { Drawer, Input, Tag, Button, Space, Popconfirm } from 'antd'
+import { Button, Drawer, Input, Popconfirm, Space, Tag } from 'antd'
 import { DeleteOutlined } from '@ant-design/icons'
 import type { CanvasNodeData, NodeTemplate } from '../types'
 import { CATEGORY_COLORS, CATEGORY_LABELS } from '../constants'
-import { NODE_TEMPLATES } from '../data'
 
 interface Props {
   open: boolean
   node: CanvasNodeData | null
+  templates: NodeTemplate[]
   onClose: () => void
-  onSave: (label: string, note: string) => void
+  onSave: (note: string) => void
   onDelete: (id: string) => void
 }
 
-function NodeDrawer({ open, node, onClose, onSave, onDelete }: Props) {
-  const [label, setLabel] = useState('')
+interface ReadonlyFieldProps {
+  label: string
+  value?: string | number | null
+}
+
+function ReadonlyField({ label, value }: ReadonlyFieldProps) {
+  return (
+    <div>
+      <label className="block text-sm text-gray-500 mb-1">{label}</label>
+      <Input value={value ?? ''} readOnly />
+    </div>
+  )
+}
+
+function NodeDrawer({ open, node, templates, onClose, onSave, onDelete }: Props) {
   const [note, setNote] = useState('')
+  const template = node ? templates.find((item) => item.id === node.templateId) : undefined
 
   useEffect(() => {
-    if (node) {
-      setLabel(node.label)
-      setNote(node.note)
-    }
+    setNote(node?.note ?? '')
   }, [node])
 
-  const template: NodeTemplate | undefined = node
-    ? NODE_TEMPLATES.find((t) => t.id === node.templateId)
-    : undefined
-
   const handleSave = () => {
-    if (!label.trim()) return
-    onSave(label.trim(), note)
-    onClose()
-  }
-
-  const handleClose = () => {
-    if (node) {
-      setLabel(node.label)
-      setNote(node.note)
-    }
+    onSave(note)
     onClose()
   }
 
   return (
-    <Drawer
-      title="节点属性"
-      open={open}
-      onClose={handleClose}
-      closable
-      mask={false}
-      extra={
-        <Space>
-          <Button onClick={handleClose}>取消</Button>
-          <Button type="primary" onClick={handleSave} disabled={!label.trim()}>
-            保存
-          </Button>
-        </Space>
-      }
-    >
+    <Drawer title="节点详情" open={open} onClose={onClose} closable mask={false}>
       {node && (
         <div className="flex flex-col gap-4">
-          <div>
-            <label className="block text-sm text-gray-500 mb-1">名称</label>
-            <Input value={label} onChange={(e) => setLabel(e.target.value)} placeholder="节点名称" />
-          </div>
+          <ReadonlyField label="名称" value={node.label} />
 
           <div>
             <label className="block text-sm text-gray-500 mb-1">分类</label>
@@ -75,30 +56,28 @@ function NodeDrawer({ open, node, onClose, onSave, onDelete }: Props) {
             <Input.TextArea value={node.description} readOnly rows={3} className="text-gray-500" />
           </div>
 
-          {template?.version && (
-            <div>
-              <label className="block text-sm text-gray-500 mb-1">推荐版本</label>
-              <span className="text-sm">{template.version}</span>
-            </div>
-          )}
+          <ReadonlyField label="推荐版本" value={template?.version ?? '-'} />
 
           <div>
             <label className="block text-sm text-gray-500 mb-1">备注</label>
             <Input.TextArea
               value={note}
-              onChange={(e) => setNote(e.target.value)}
-              placeholder="用户自定义备注（可选）"
-              rows={3}
+              onChange={(event) => setNote(event.target.value)}
+              placeholder="填写备注，点击保存画布后生效"
+              rows={4}
             />
           </div>
 
           <div className="flex items-center justify-between pt-2 border-t">
-            <div className="flex gap-4 text-xs text-gray-400">
-              <span>位置: ({node.positionX.toFixed(0)}, {node.positionY.toFixed(0)})</span>
+            <div className="flex flex-col gap-1 text-xs text-gray-400">
+              <span>
+                位置：({node.positionX.toFixed(0)}, {node.positionY.toFixed(0)})
+              </span>
               <span>ID: {node.id}</span>
             </div>
             <Popconfirm
-              title="确定删除此节点？"
+              title="确定删除这个节点吗？"
+              description="当前仅修改草稿，点击保存画布后生效"
               onConfirm={() => {
                 onDelete(node.id)
                 onClose()
@@ -108,6 +87,15 @@ function NodeDrawer({ open, node, onClose, onSave, onDelete }: Props) {
                 删除
               </Button>
             </Popconfirm>
+          </div>
+
+          <div className="flex justify-end">
+            <Space>
+              <Button onClick={onClose}>取消</Button>
+              <Button type="primary" onClick={handleSave}>
+                应用备注
+              </Button>
+            </Space>
           </div>
         </div>
       )}

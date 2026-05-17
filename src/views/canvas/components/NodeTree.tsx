@@ -1,15 +1,16 @@
 import React, { useMemo } from 'react'
-import { Tree } from 'antd'
+import { Empty, Tree } from 'antd'
 import type { TreeDataNode } from 'antd'
-import { NODE_TEMPLATES } from '../data'
 import { CATEGORY_COLORS, CATEGORY_LABELS } from '../constants'
-import type { NodeCategory, DragNodeData } from '../types'
+import type { NodeCategory, DragNodeData, CanvasFramework, NodeTemplate } from '../types'
 
 interface Props {
-  framework: 'vue' | 'react' | null
+  framework: CanvasFramework
+  templates: NodeTemplate[]
+  loading?: boolean
 }
 
-function isDisabled(category: NodeCategory, framework: 'vue' | 'react' | null) {
+function isDisabled(category: NodeCategory, framework: CanvasFramework) {
   if (!framework || category === 'COMMON' || category === 'PROJECT') return false
   return category.toUpperCase() !== framework.toUpperCase()
 }
@@ -28,14 +29,14 @@ function ColorDot({ category }: { category: NodeCategory }) {
   )
 }
 
-function buildTreeData(framework: 'vue' | 'react' | null): TreeDataNode[] {
-  const grouped: Record<NodeCategory, typeof NODE_TEMPLATES> = {
+function buildTreeData(templates: NodeTemplate[], framework: CanvasFramework): TreeDataNode[] {
+  const grouped: Record<NodeCategory, NodeTemplate[]> = {
     VUE: [],
     REACT: [],
     COMMON: [],
     PROJECT: [],
   }
-  for (const t of NODE_TEMPLATES) {
+  for (const t of templates) {
     grouped[t.category].push(t)
   }
 
@@ -79,8 +80,12 @@ function buildTreeData(framework: 'vue' | 'react' | null): TreeDataNode[] {
   })
 }
 
-const NodeTree: React.FC<Props> = ({ framework }) => {
-  const treeData = useMemo(() => buildTreeData(framework), [framework])
+const NodeTree: React.FC<Props> = ({ framework, templates, loading }) => {
+  const treeData = useMemo(() => buildTreeData(templates, framework), [framework, templates])
+
+  if (!loading && templates.length === 0) {
+    return <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="暂无节点模板" />
+  }
 
   return <Tree treeData={treeData} defaultExpandAll blockNode showIcon={false} />
 }

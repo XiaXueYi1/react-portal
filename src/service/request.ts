@@ -37,14 +37,9 @@ export function resolveApiUrl(path: string): string {
 }
 
 function unwrapResponseData<T>(payload: ApiEnvelope<T> | T): T {
-    if (
-        payload &&
-        typeof payload === 'object' &&
-        'data' in payload &&
-        'code' in payload &&
-        'message' in payload
-    ) {
-        return payload.data
+    if (payload && typeof payload === 'object' && 'data' in payload) {
+        const maybeEnvelope = payload as ApiEnvelope<T> | { data: T }
+        return maybeEnvelope.data
     }
 
     return payload as T

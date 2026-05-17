@@ -9,8 +9,33 @@ export interface NodeTemplate {
   sortOrder: number
 }
 
+export type CanvasFramework = 'vue' | 'react' | null
+
+export interface CanvasSummary {
+  id: string
+  name: string
+  framework: CanvasFramework
+  thumbnail?: string | null
+  updatedAt: string
+  nodeCount: number
+}
+
+export interface CanvasDetail {
+  id: string
+  name: string
+  description?: string | null
+  framework: CanvasFramework
+  thumbnail?: string | null
+  isDeleted?: boolean
+  createdAt?: string
+  updatedAt?: string
+  nodes: CanvasNodeData[]
+  edges: CanvasEdgeData[]
+}
+
 export interface CanvasNodeData {
   id: string
+  canvasId?: string
   templateId: string
   label: string
   category: NodeCategory
@@ -28,7 +53,38 @@ export interface DragNodeData {
 
 export interface CanvasEdgeData {
   id: string
+  canvasId?: string
   sourceId: string
   targetId: string
+  sourcePortId?: string
+  targetPortId?: string
   label?: string
+  style?: Record<string, unknown> | null
+}
+
+export interface SaveCanvasPayload {
+  id?: string
+  name?: string
+  description?: string | null
+  framework?: CanvasFramework
+  thumbnail?: string | null
+  nodes: Array<{
+    id: string
+    templateId: string
+    label: string
+    note?: string
+    category: NodeCategory
+    description?: string
+    positionX: number
+    positionY: number
+  }>
+  edges: Array<{
+    id: string
+    sourceId: string
+    targetId: string
+    sourcePortId?: string
+    targetPortId?: string
+    label?: string
+    style?: Record<string, unknown> | null
+  }>
 }

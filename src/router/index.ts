@@ -33,6 +33,10 @@ const router = createBrowserRouter([
                 lazy: lazyComponent(() => import('@/views/canvas/index.tsx')),
             },
             {
+                path: "canvas-list",
+                lazy: lazyComponent(() => import('@/views/canvas-list/index.tsx')),
+            },
+            {
                 path: "charts",
                 lazy: lazyComponent(() => import('@/views/charts/index.tsx')),
             },
