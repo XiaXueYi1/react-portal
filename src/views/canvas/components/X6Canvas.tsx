@@ -1,12 +1,22 @@
 import { useEffect, useRef, forwardRef, useImperativeHandle, useCallback } from 'react'
 import { Graph, Edge, Node as X6Node, type Cell } from '@antv/x6'
 import { register } from '@antv/x6-react-shape'
-import type { CanvasNodeData, CanvasEdgeData } from '../types'
-import { CATEGORY_COLORS, CATEGORY_LABELS } from '../constants'
+import type { CanvasNodeData, CanvasEdgeData, NodeCardProps, X6CanvasHandle, X6CanvasProps } from '../types'
+import {
+  CANVAS_NODE_REGISTRY_FLAG,
+  CANVAS_NODE_SHAPE,
+  CATEGORY_COLORS,
+  CATEGORY_LABELS,
+  EDGE_COLOR,
+  EDGE_CONNECTOR,
+  EDGE_ROUTER,
+  NODE_H,
+  NODE_W,
+  PORT_COLOR,
+  PORTS,
+} from '../constants'
 
-interface NodeCardProps {
-  node?: X6Node
-}
+export type { X6CanvasHandle } from '../types'
 
 function NodeCard({ node }: NodeCardProps) {
   const data = node?.getData<CanvasNodeData>()
@@ -61,59 +71,13 @@ function NodeCard({ node }: NodeCardProps) {
   )
 }
 
-const canvasNodeRegistryFlag = '__canvas_node_shape_registered__'
-if (!(globalThis as Record<string, unknown>)[canvasNodeRegistryFlag]) {
+if (!(globalThis as Record<string, unknown>)[CANVAS_NODE_REGISTRY_FLAG]) {
   register({
-    shape: 'canvas-node',
+    shape: CANVAS_NODE_SHAPE,
     component: NodeCard,
     effect: ['data'],
   })
-    ; (globalThis as Record<string, unknown>)[canvasNodeRegistryFlag] = true
-}
-
-const PORT_RADIUS = 6
-const PORT_COLOR_INPUT = '#2563eb'
-const PORT_COLOR_OUTPUT = '#f97316'
-const PORT_COLOR_CONNECTED = '#16a34a'
-const EDGE_COLOR = '#f97316'
-
-function portAttrs(color: string) {
-  return {
-    circle: {
-      r: PORT_RADIUS,
-      magnet: true,
-      stroke: color,
-      strokeWidth: 2,
-      fill: '#ffffff',
-    },
-  }
-}
-
-const ports = {
-  groups: {
-    top: {
-      position: 'top',
-      attrs: portAttrs(PORT_COLOR_INPUT),
-    },
-    right: {
-      position: 'right',
-      attrs: portAttrs(PORT_COLOR_OUTPUT),
-    },
-    bottom: {
-      position: 'bottom',
-      attrs: portAttrs(PORT_COLOR_OUTPUT),
-    },
-    left: {
-      position: 'left',
-      attrs: portAttrs(PORT_COLOR_INPUT),
-    },
-  },
-  items: [
-    { id: 'top', group: 'top' },
-    { id: 'right', group: 'right' },
-    { id: 'bottom', group: 'bottom' },
-    { id: 'left', group: 'left' },
-  ],
+    ; (globalThis as Record<string, unknown>)[CANVAS_NODE_REGISTRY_FLAG] = true
 }
 
 function buildEdge(
@@ -127,49 +91,22 @@ function buildEdge(
     id: edgeId,
     source: sourcePortId ? { cell: sourceId, port: sourcePortId } : { cell: sourceId },
     target: targetPortId ? { cell: targetId, port: targetPortId } : { cell: targetId },
-    router: { name: 'orth', args: { padding: 20 } },
-    connector: { name: 'rounded', args: { radius: 6 } },
+    router: EDGE_ROUTER,
+    connector: EDGE_CONNECTOR,
     attrs: {
       line: {
         stroke: EDGE_COLOR,
         strokeWidth: 3,
-        targetMarker: { name: 'block', width: 12, height: 8, fill: EDGE_COLOR },
+        strokeLinecap: 'round',
+        strokeLinejoin: 'round',
+        targetMarker: { name: 'block', width: 12, height: 8, fill: EDGE_COLOR, stroke: EDGE_COLOR },
       },
     },
     zIndex: 1,
   }
 }
 
-export interface X6CanvasHandle {
-  loadGraph: (nodes: CanvasNodeData[], edges: CanvasEdgeData[]) => void
-  addNode: (data: CanvasNodeData) => void
-  removeNode: (id: string) => void
-  updateNode: (id: string, patch: Partial<CanvasNodeData>) => void
-  getNodeData: (id: string) => CanvasNodeData | undefined
-  getAllNodeData: () => CanvasNodeData[]
-  addEdge: (data: CanvasEdgeData) => void
-  removeEdge: (id: string) => void
-  selectNode: (id: string | null) => void
-}
-
-interface Props {
-  graphVersion: number
-  initialNodes: CanvasNodeData[]
-  initialEdges: CanvasEdgeData[]
-  onNodeClick: (id: string) => void
-  onNodeDoubleClick: (id: string) => void
-  onCanvasClick: () => void
-  onNodeMove: (id: string, x: number, y: number) => void
-  onNodeRemoved: (nodeId: string) => void
-  onEdgeCreated: (edge: CanvasEdgeData) => void
-  onEdgeRemoved: (edgeId: string) => void
-  onDropFromTree: (e: React.DragEvent) => void
-}
-
-const NODE_W = 148
-const NODE_H = 52
-
-const X6Canvas = forwardRef<X6CanvasHandle, Props>(
+const X6Canvas = forwardRef<X6CanvasHandle, X6CanvasProps>(
   (
     {
       graphVersion,
@@ -216,20 +153,9 @@ const X6Canvas = forwardRef<X6CanvasHandle, Props>(
       }
     })
 
-    const isPortConnected = useCallback((node: X6Node, portId: string) => {
-      const graph = graphRef.current
-      if (!graph) return false
-
-      return graph.getConnectedEdges(node).some(
-        (edge) =>
-          (edge.getSourceCellId() === node.id && edge.getSourcePortId() === portId) ||
-          (edge.getTargetCellId() === node.id && edge.getTargetPortId() === portId),
-      )
-    }, [])
-
     const setPortColor = useCallback((node: X6Node, portId: string, color: string) => {
       node.setPortProp(portId, 'attrs/circle/stroke', color)
-      node.setPortProp(portId, 'attrs/circle/strokeWidth', color === PORT_COLOR_CONNECTED ? 3 : 2)
+      node.setPortProp(portId, 'attrs/circle/strokeWidth', 2)
     }, [])
 
     const syncNodePorts = useCallback(
@@ -238,12 +164,10 @@ const X6Canvas = forwardRef<X6CanvasHandle, Props>(
           const portId = port.id
           if (!portId) return
 
-          const connected = isPortConnected(node, portId)
-          const idleColor = portId === 'left' || portId === 'top' ? PORT_COLOR_INPUT : PORT_COLOR_OUTPUT
-          setPortColor(node, portId, connected ? PORT_COLOR_CONNECTED : idleColor)
+          setPortColor(node, portId, PORT_COLOR)
         })
       },
-      [isPortConnected, setPortColor],
+      [setPortColor],
     )
 
     const applyGraphData = useCallback(
@@ -254,14 +178,14 @@ const X6Canvas = forwardRef<X6CanvasHandle, Props>(
           const nodeCells = nodes.map((data) =>
             graph.createNode({
               id: data.id,
-              shape: 'canvas-node',
+              shape: CANVAS_NODE_SHAPE,
               primer: 'rect',
               x: data.positionX,
               y: data.positionY,
               width: NODE_W,
               height: NODE_H,
               data,
-              ports,
+              ports: PORTS,
             }),
           )
 
@@ -307,7 +231,7 @@ const X6Canvas = forwardRef<X6CanvasHandle, Props>(
         interacting: { nodeMovable: true },
         translating: { restrict: true },
         connecting: {
-          connector: { name: 'rounded', args: { radius: 6 } },
+          connector: EDGE_CONNECTOR,
           connectionPoint: 'anchor',
           snap: { radius: 20 },
           allowBlank: false,
@@ -345,8 +269,8 @@ const X6Canvas = forwardRef<X6CanvasHandle, Props>(
             args: {
               attrs: {
                 fill: '#ffffff',
-                stroke: PORT_COLOR_CONNECTED,
-                strokeWidth: 3,
+                stroke: PORT_COLOR,
+                strokeWidth: 2,
               },
             },
           },
@@ -484,14 +408,14 @@ const X6Canvas = forwardRef<X6CanvasHandle, Props>(
       graph.getNodes().forEach((node) => node.removeTools())
       const node = graph.addNode({
         id: data.id,
-        shape: 'canvas-node',
+        shape: CANVAS_NODE_SHAPE,
         primer: 'rect',
         x: data.positionX,
         y: data.positionY,
         width: NODE_W,
         height: NODE_H,
         data,
-        ports,
+        ports: PORTS,
       })
 
       syncNodePorts(node)

@@ -22,7 +22,7 @@ class AuthApi {
     }
 
     static status() {
-        return request.get<AuthStatusResponse>('/auth/status', { skipAuthRedirect: true })
+        return request.get<AuthStatusResponse>('/auth/status')
     }
 }
 

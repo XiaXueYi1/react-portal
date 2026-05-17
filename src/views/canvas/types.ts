@@ -1,3 +1,6 @@
+import type { DragEvent } from 'react'
+import type { Node as X6Node } from '@antv/x6'
+
 export type NodeCategory = 'COMMON' | 'VUE' | 'REACT' | 'PROJECT'
 
 export interface NodeTemplate {
@@ -87,4 +90,34 @@ export interface SaveCanvasPayload {
     label?: string
     style?: Record<string, unknown> | null
   }>
+}
+
+export interface NodeCardProps {
+  node?: X6Node
+}
+
+export interface X6CanvasHandle {
+  loadGraph: (nodes: CanvasNodeData[], edges: CanvasEdgeData[]) => void
+  addNode: (data: CanvasNodeData) => void
+  removeNode: (id: string) => void
+  updateNode: (id: string, patch: Partial<CanvasNodeData>) => void
+  getNodeData: (id: string) => CanvasNodeData | undefined
+  getAllNodeData: () => CanvasNodeData[]
+  addEdge: (data: CanvasEdgeData) => void
+  removeEdge: (id: string) => void
+  selectNode: (id: string | null) => void
+}
+
+export interface X6CanvasProps {
+  graphVersion: number
+  initialNodes: CanvasNodeData[]
+  initialEdges: CanvasEdgeData[]
+  onNodeClick: (id: string) => void
+  onNodeDoubleClick: (id: string) => void
+  onCanvasClick: () => void
+  onNodeMove: (id: string, x: number, y: number) => void
+  onNodeRemoved: (nodeId: string) => void
+  onEdgeCreated: (edge: CanvasEdgeData) => void
+  onEdgeRemoved: (edgeId: string) => void
+  onDropFromTree: (e: DragEvent) => void
 }

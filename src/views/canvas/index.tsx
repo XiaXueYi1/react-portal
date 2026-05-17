@@ -89,19 +89,6 @@ function Canvas() {
   const framework = useMemo(() => normalizeFramework(nodes), [nodes])
   const selectedNode = selectedNodeId ? nodes.find((node) => node.id === selectedNodeId) ?? null : null
 
-  const scheduleGraphLoad = useCallback((nextNodes: CanvasNodeData[], nextEdges: CanvasEdgeData[], attempt = 0) => {
-    window.requestAnimationFrame(() => {
-      if (x6Ref.current) {
-        x6Ref.current.loadGraph(nextNodes, nextEdges)
-        return
-      }
-
-      if (attempt < 10) {
-        scheduleGraphLoad(nextNodes, nextEdges, attempt + 1)
-      }
-    })
-  }, [])
-
   const loadTemplates = useCallback(async () => {
     try {
       const templateList = await CanvasApi.getTemplates()
@@ -123,7 +110,6 @@ function Canvas() {
       setNodes(nextNodes)
       setEdges(nextEdges)
       setGraphVersion((prev) => prev + 1)
-      scheduleGraphLoad(nextNodes, nextEdges)
       setSelectedNodeId(null)
       setDrawerOpen(false)
       setDirty(false)
@@ -132,7 +118,7 @@ function Canvas() {
     } finally {
       setDetailLoading(false)
     }
-  }, [scheduleGraphLoad])
+  }, [])
 
   // Load templates once on mount
   useEffect(() => {
@@ -157,11 +143,10 @@ function Canvas() {
       setNodes([])
       setEdges([])
       setGraphVersion((prev) => prev + 1)
-      scheduleGraphLoad([], [])
       setDirty(true)
       setLoading(false)
     }
-  }, [initialCanvasId, loadCanvasDetail, scheduleGraphLoad])
+  }, [initialCanvasId, loadCanvasDetail])
 
   const handleDropFromTree = useCallback(
     (event: React.DragEvent) => {
