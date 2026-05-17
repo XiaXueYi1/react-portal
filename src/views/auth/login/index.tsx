@@ -52,7 +52,7 @@ function Login() {
 
                         <Form<LoginForm>
                             className="space-y-5"
-                            initialValues={{ username: 'react', password: '123456' }}
+                            initialValues={{ username: 'admin', password: '123456' }}
                             onFinish={(values) => mutation.mutate(values)}
                             autoComplete="off"
                             layout="vertical"
