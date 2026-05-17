@@ -17,14 +17,16 @@ const instance = axios.create({
 })
 
 instance.interceptors.request.use((config) => {
-    console.log('[api request]', config, config.baseURL, config.url, config.withCredentials)
     return config
 })
 
 instance.interceptors.response.use(
     (response) => response,
     (error) => {
-        const message = error.response?.data?.message || error.message || 'Request failed'
+        if (error.response?.status === 401) {
+            window.location.href = '/login'
+        }
+        const message = error.response?.data?.message || error.message || '请求失败'
         return Promise.reject(new Error(Array.isArray(message) ? message[0] : message))
     },
 )
