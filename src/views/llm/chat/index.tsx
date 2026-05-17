@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState, startTransition } from 'react'
 import { message } from 'antd'
+import { useNavigate, useSearchParams } from 'react-router'
 import ChatApi from './api'
 import ChatComposer from './components/ChatComposer'
 import ChatMessageList from './components/ChatMessageList'
@@ -39,6 +40,9 @@ function toClientMessages(detail: ConversationDetail): ClientConversationMessage
 }
 
 function Chat() {
+    const navigate = useNavigate()
+    const [searchParams] = useSearchParams()
+
     // ==================== 核心状态 ====================
 
     // 左侧会话列表
@@ -57,6 +61,7 @@ function Chat() {
 
     // 流式上下文 ref —— 解决闭包陈旧问题（详见 PendingStreamContext 注释）
     const pendingStreamRef = useRef<PendingStreamContext | null>(null)
+    const initialMessageHandledRef = useRef(false)
 
     // ==================== 派生状态 ====================
 
@@ -386,13 +391,16 @@ function Chat() {
 
     // 发送消息 —— 整个应用最核心的流程
     const handleSendMessage = useCallback(
-        async (content: string) => {
+        async (content: string, options?: { forceNew?: boolean }) => {
             const now = new Date().toISOString()
 
             // 判断当前是否有"真实"的会话：非创建模式 + 有选中 + 非 draft
             // 如果没有 → currentConversationId 为 undefined → 后端会创建新会话
             const currentConversationId =
-                !isCreatingConversation && activeConversationId && !isDraftConversationId(activeConversationId)
+                !options?.forceNew &&
+                    !isCreatingConversation &&
+                    activeConversationId &&
+                    !isDraftConversationId(activeConversationId)
                     ? activeConversationId
                     : undefined
 
@@ -479,6 +487,19 @@ function Chat() {
         },
         [activeConversationId, isCreatingConversation, messagesMap, startStream, upsertConversationSummary],
     )
+
+    useEffect(() => {
+        if (initialMessageHandledRef.current) return
+
+        const initialMessage = searchParams.get('message')?.trim()
+        if (!initialMessage) return
+
+        initialMessageHandledRef.current = true
+        setIsCreatingConversation(true)
+        setActiveConversationId(null)
+        navigate('/chat', { replace: true })
+        void handleSendMessage(initialMessage, { forceNew: true })
+    }, [handleSendMessage, navigate, searchParams])
 
     // 用户点击"停止"按钮
     const handleStop = useCallback(async () => {

@@ -1,14 +1,10 @@
 import { useNavigate, useSearchParams } from 'react-router'
 import { useMutation } from '@tanstack/react-query'
-import { Form, Input, Button, Typography, Alert } from 'antd'
-import { UserOutlined, LockOutlined } from '@ant-design/icons'
+import { Alert, Button, Form, Input } from 'antd'
+import { LockOutlined, UserOutlined } from '@ant-design/icons'
 import { useAuthStore } from '@/store'
 import type { LoginForm } from '../types'
 import LoginApi from '../api'
-
-const { Title, Text } = Typography
-const LOGIN_BACKGROUND_IMAGE =
-    'https://images.unsplash.com/photo-1519608487953-e999c86e7455?auto=format&fit=crop&w=2200&q=85'
 
 function Login() {
     const [searchParams] = useSearchParams()
@@ -25,74 +21,117 @@ function Login() {
     })
 
     return (
-        <main
-            className="relative min-h-screen overflow-hidden bg-neutral-950 text-white"
-            style={{
-                backgroundImage: `linear-gradient(180deg, rgba(3, 7, 18, 0.58) 0%, rgba(3, 7, 18, 0.9) 100%), url(${LOGIN_BACKGROUND_IMAGE})`,
-                backgroundSize: 'cover',
-                backgroundPosition: 'center',
-            }}
-        >
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_35%,rgba(56,189,248,0.2),transparent_32%),linear-gradient(120deg,rgba(6,182,212,0.1),transparent_40%,rgba(99,102,241,0.12))]" />
+        <main className="relative size-full min-h-screen overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-br from-indigo-50/40 via-purple-50/30 via-40% to-cyan-50/40 to-90%">
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(147,197,253,0.15),transparent_50%)]" />
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_60%,rgba(196,181,253,0.12),transparent_50%)]" />
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_90%,rgba(165,243,252,0.1),transparent_50%)]" />
+            </div>
 
-            <section className="relative z-10 flex min-h-screen items-center justify-center px-6 py-10">
-                <div className="w-full max-w-[420px] rounded-[6px] border border-white/12 bg-neutral-950/55 p-7 shadow-2xl shadow-black/35 backdrop-blur-xl sm:p-8">
-                    <div className="mb-8 text-center">
-                        <Text className="!mb-3 block !text-xs !font-semibold !uppercase !tracking-[0.24em] !text-cyan-200">
-                            Frontend Portal
-                        </Text>
-                        <Title level={2} className="!mb-2 !text-white">
-                            登录
-                        </Title>
-                        <Text className="!text-slate-300">使用工作台账号继续访问</Text>
-                    </div>
+            <section className="relative z-10 flex size-full min-h-screen items-center justify-center px-4">
+                <div className="w-full max-w-md">
+                    <div className="rounded-3xl border border-white/60 bg-white/70 p-8 shadow-2xl backdrop-blur-md">
+                        <div className="mb-8 text-center">
+                            <div className="mb-4 inline-flex size-16 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-500 to-cyan-500 shadow-lg">
+                                <LockOutlined className="text-3xl text-white" />
+                            </div>
+                            <h1 className="mb-2 text-2xl text-gray-800">欢迎回来</h1>
+                            <p className="text-sm text-gray-500">请登录您的账号</p>
+                        </div>
 
-                    {mutation.error && (
-                        <Alert
-                            message={mutation.error.message}
-                            type="error"
-                            showIcon
-                            closable
-                            className="mb-4"
-                            onClose={() => mutation.reset()}
-                        />
-                    )}
+                        {mutation.error && (
+                            <Alert
+                                message={mutation.error.message}
+                                type="error"
+                                showIcon
+                                closable
+                                className="mb-5"
+                                onClose={() => mutation.reset()}
+                            />
+                        )}
 
-                    <Form<LoginForm>
-                        initialValues={{ username: 'react', password: '123456' }}
-                        onFinish={(values) => mutation.mutate(values)}
-                        autoComplete="off"
-                        size="large"
-                        layout="vertical"
-                    >
-                        <Form.Item
-                            name="username"
-                            label={<span className="text-slate-200">用户名</span>}
-                            rules={[{ required: true, message: '请输入用户名' }]}
+                        <Form<LoginForm>
+                            className="space-y-5"
+                            initialValues={{ username: 'react', password: '123456' }}
+                            onFinish={(values) => mutation.mutate(values)}
+                            autoComplete="off"
+                            layout="vertical"
                         >
-                            <Input prefix={<UserOutlined />} placeholder="请输入用户名" />
-                        </Form.Item>
+                            <div>
+                                <label htmlFor="username" className="mb-2 block text-sm text-gray-700">
+                                    用户名
+                                </label>
+                                <Form.Item
+                                    name="username"
+                                    rules={[{ required: true, message: '请输入用户名' }]}
+                                    className="!mb-0"
+                                >
+                                    <Input
+                                        id="username"
+                                        size="large"
+                                        prefix={<UserOutlined className="text-gray-400" />}
+                                        placeholder="请输入用户名"
+                                        className="!rounded-xl !border-gray-200/60 !bg-white/80 !py-2 !shadow-sm transition-all"
+                                    />
+                                </Form.Item>
+                            </div>
 
-                        <Form.Item
-                            name="password"
-                            label={<span className="text-slate-200">密码</span>}
-                            rules={[{ required: true, message: '请输入密码' }]}
-                        >
-                            <Input.Password prefix={<LockOutlined />} placeholder="请输入密码" />
-                        </Form.Item>
+                            <div>
+                                <label htmlFor="password" className="mb-2 block text-sm text-gray-700">
+                                    密码
+                                </label>
+                                <Form.Item
+                                    name="password"
+                                    rules={[{ required: true, message: '请输入密码' }]}
+                                    className="!mb-0"
+                                >
+                                    <Input.Password
+                                        id="password"
+                                        size="large"
+                                        prefix={<LockOutlined className="text-gray-400" />}
+                                        placeholder="请输入密码"
+                                        className="!rounded-xl !border-gray-200/60 !bg-white/80 !py-2 !shadow-sm transition-all"
+                                    />
+                                </Form.Item>
+                            </div>
 
-                        <Form.Item className="mb-0">
+                            <div className="flex items-center justify-between text-sm">
+                                <label className="group flex cursor-pointer items-center">
+                                    <input
+                                        type="checkbox"
+                                        className="size-4 cursor-pointer rounded border-gray-300 text-blue-500 focus:ring-2 focus:ring-blue-400/40"
+                                    />
+                                    <span className="ml-2 text-gray-600 transition-colors group-hover:text-gray-800">
+                                        记住我
+                                    </span>
+                                </label>
+                                <button
+                                    type="button"
+                                    className="text-blue-500 transition-colors hover:text-blue-600"
+                                >
+                                    忘记密码？
+                                </button>
+                            </div>
+
                             <Button
-                                type="primary"
                                 htmlType="submit"
-                                block
                                 loading={mutation.isPending}
-                            className="mt-2"
-                        >
-                            登录
-                        </Button>
-                        </Form.Item>
-                    </Form>
+                                className="!h-auto !w-full !rounded-xl !border-0 !bg-gradient-to-r !from-blue-500 !to-cyan-500 !py-3.5 !text-white !shadow-lg transition-all duration-300 hover:!-translate-y-0.5 hover:!from-blue-600 hover:!to-cyan-600 hover:!shadow-xl"
+                            >
+                                登录
+                            </Button>
+
+                            <div className="pt-2 text-center text-sm text-gray-600">
+                                还没有账号？
+                                <button
+                                    type="button"
+                                    className="ml-1 text-blue-500 transition-colors hover:text-blue-600"
+                                >
+                                    立即注册
+                                </button>
+                            </div>
+                        </Form>
+                    </div>
                 </div>
             </section>
         </main>
