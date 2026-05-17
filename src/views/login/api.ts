@@ -1,9 +1,9 @@
-import request from '@/service/request'
+import AuthApi from '@/service/auth'
 import type { LoginForm, LoginResponse } from './types'
 
 class LoginApi {
     static login(data: LoginForm) {
-        return request.post<LoginResponse>('/auth/login', data)
+        return AuthApi.login(data) as Promise<LoginResponse>
     }
 }
 

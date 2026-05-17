@@ -1,10 +1,5 @@
-export interface LoginForm {
-    username: string
-    password: string
-}
+import type { LoginParams, LoginResponse as AuthLoginResponse } from '@/service/auth'
 
-export interface LoginResponse {
-    id: string
-    name: string
-    avatar?: string
-}
+export type LoginForm = LoginParams
+
+export type LoginResponse = AuthLoginResponse
