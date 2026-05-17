@@ -23,10 +23,7 @@ instance.interceptors.request.use((config) => {
 instance.interceptors.response.use(
     (response) => response,
     (error) => {
-        if (error.response?.status === 401) {
-            window.location.href = '/login'
-        }
-        const message = error.response?.data?.message || error.message || '请求失败'
+        const message = error.response?.data?.message || error.message || 'Request failed'
         return Promise.reject(new Error(Array.isArray(message) ? message[0] : message))
     },
 )
