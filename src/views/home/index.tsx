@@ -39,8 +39,8 @@ export default function Home() {
   const loadRecentCanvases = useCallback(async () => {
     setLoading(true)
     try {
-      const data = await CanvasApi.getCanvasList()
-      setCanvasList(data)
+      const data = await CanvasApi.getCanvasList({ page: 1, pageSize: 6 })
+      setCanvasList(data.list)
     } catch {
       message.error('加载近期画布失败')
     } finally {

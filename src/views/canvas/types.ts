@@ -23,6 +23,18 @@ export interface CanvasSummary {
   nodeCount: number
 }
 
+export interface CanvasListParams {
+  page?: number
+  pageSize?: number
+}
+
+export interface CanvasListResponse {
+  list: CanvasSummary[]
+  total: number
+  page: number
+  pageSize: number
+}
+
 export interface CanvasDetail {
   id: string
   name: string

@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
+import type { TablePaginationConfig } from 'antd'
 import { Button, Input, Popconfirm, Table, Tag, message } from 'antd'
 import { PlusOutlined, SearchOutlined } from '@ant-design/icons'
 import { useNavigate } from 'react-router'
@@ -13,22 +14,33 @@ export default function CanvasList() {
   const [loading, setLoading] = useState(false)
   const [keyword, setKeyword] = useState('')
   const [searchText, setSearchText] = useState('')
+  const [pagination, setPagination] = useState({
+    current: 1,
+    pageSize: 10,
+    total: 0,
+  })
 
-  const fetchList = useCallback(async () => {
+  const fetchList = useCallback(async (page = pagination.current, pageSize = pagination.pageSize) => {
     setLoading(true)
     try {
-      const data = await CanvasApi.getCanvasList()
-      setList(data)
+      const data = await CanvasApi.getCanvasList({ page, pageSize })
+      setList(data.list)
+      setPagination({
+        current: data.page,
+        pageSize: data.pageSize,
+        total: data.total,
+      })
     } catch {
       message.error('加载画布列表失败')
     } finally {
       setLoading(false)
     }
-  }, [])
+  }, [pagination.current, pagination.pageSize])
 
   useEffect(() => {
-    fetchList()
-  }, [fetchList])
+    void fetchList(1, pagination.pageSize)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const filtered = useMemo(() => {
     if (!searchText.trim()) return list
@@ -40,11 +52,17 @@ export default function CanvasList() {
     setSearchText(keyword.trim())
   }, [keyword])
 
+  const handleTableChange = useCallback((nextPagination: TablePaginationConfig) => {
+    const nextPage = nextPagination.current ?? 1
+    const nextPageSize = nextPagination.pageSize ?? 10
+    void fetchList(nextPage, nextPageSize)
+  }, [fetchList])
+
   const handleDelete = useCallback(async (id: string) => {
     try {
       await CanvasApi.deleteCanvas(id)
       message.success('已删除')
-      fetchList()
+      void fetchList()
     } catch {
       message.error('删除失败')
     }
@@ -125,7 +143,15 @@ export default function CanvasList() {
         columns={columns}
         dataSource={filtered}
         loading={loading}
-        pagination={{ pageSize: 10, showTotal: (total) => `共 ${total} 条` }}
+        onChange={handleTableChange}
+        pagination={{
+          current: pagination.current,
+          pageSize: pagination.pageSize,
+          total: pagination.total,
+          showSizeChanger: true,
+          pageSizeOptions: [10, 20, 50],
+          showTotal: (total) => `共 ${total} 条`,
+        }}
       />
     </div>
   )
