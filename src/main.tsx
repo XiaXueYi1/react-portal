@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client'
 import { RouterProvider } from "react-router"
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ConfigProvider, theme } from 'antd'
+import zhCN from 'antd/locale/zh_CN'
 import router from "@/router"
 import { useAppStore } from '@/store'
 import '@/styles/index.css'
@@ -25,6 +26,7 @@ function AppProviders() {
 
     return (
         <ConfigProvider
+            locale={zhCN}
             theme={{
                 algorithm: darkMode ? theme.darkAlgorithm : theme.defaultAlgorithm,
             }}

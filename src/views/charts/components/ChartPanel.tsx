@@ -21,7 +21,6 @@ function ChartPanel({ title, description, color, icon, data, loading }: ChartPan
             },
             tooltip: {
                 trigger: 'axis',
-                axisPointer: { type: 'shadow' },
                 formatter: (params: unknown) => {
                     const item = Array.isArray(params)
                         ? params[0] as { axisValue?: string; value?: number }
