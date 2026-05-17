@@ -2,7 +2,9 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { RouterProvider } from "react-router"
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { ConfigProvider, theme } from 'antd'
 import router from "@/router"
+import { useAppStore } from '@/store'
 import '@/styles/index.css'
 
 const queryClient = new QueryClient({
@@ -18,10 +20,24 @@ const queryClient = new QueryClient({
     },
 })
 
+function AppProviders() {
+    const darkMode = useAppStore((state) => state.appState.darkMode)
+
+    return (
+        <ConfigProvider
+            theme={{
+                algorithm: darkMode ? theme.darkAlgorithm : theme.defaultAlgorithm,
+            }}
+        >
+            <QueryClientProvider client={queryClient}>
+                <RouterProvider router={router} />
+            </QueryClientProvider>
+        </ConfigProvider>
+    )
+}
+
 createRoot(document.getElementById('root')!).render(
     <StrictMode>
-        <QueryClientProvider client={queryClient}>
-            <RouterProvider router={router} />
-        </QueryClientProvider>
+        <AppProviders />
     </StrictMode>
 )

@@ -12,6 +12,7 @@ export default function CanvasList() {
   const [list, setList] = useState<CanvasSummary[]>([])
   const [loading, setLoading] = useState(false)
   const [keyword, setKeyword] = useState('')
+  const [searchText, setSearchText] = useState('')
 
   const fetchList = useCallback(async () => {
     setLoading(true)
@@ -25,13 +26,19 @@ export default function CanvasList() {
     }
   }, [])
 
-  useEffect(() => { fetchList() }, [fetchList])
+  useEffect(() => {
+    fetchList()
+  }, [fetchList])
 
   const filtered = useMemo(() => {
-    if (!keyword.trim()) return list
-    const kw = keyword.trim().toLowerCase()
+    if (!searchText.trim()) return list
+    const kw = searchText.trim().toLowerCase()
     return list.filter((item) => item.name.toLowerCase().includes(kw))
-  }, [list, keyword])
+  }, [list, searchText])
+
+  const handleSearch = useCallback(() => {
+    setSearchText(keyword.trim())
+  }, [keyword])
 
   const handleDelete = useCallback(async (id: string) => {
     try {
@@ -101,10 +108,14 @@ export default function CanvasList() {
           prefix={<SearchOutlined />}
           value={keyword}
           onChange={(e) => setKeyword(e.target.value)}
+          onPressEnter={handleSearch}
           allowClear
           style={{ width: 260 }}
         />
-        <Button type="primary" icon={<PlusOutlined />} onClick={() => navigate('/canvas')}>
+        <Button icon={<SearchOutlined />} onClick={handleSearch}>
+          搜索
+        </Button>
+        <Button className="ml-auto" type="primary" icon={<PlusOutlined />} onClick={() => navigate('/canvas')}>
           新建画布
         </Button>
       </div>

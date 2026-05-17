@@ -1,4 +1,12 @@
-import { HomeOutlined, LayoutOutlined, MenuFoldOutlined, MenuUnfoldOutlined, MessageOutlined } from '@ant-design/icons'
+import {
+  HomeOutlined,
+  LayoutOutlined,
+  MenuFoldOutlined,
+  MenuUnfoldOutlined,
+  MessageOutlined,
+  MoonOutlined,
+  SunOutlined,
+} from '@ant-design/icons'
 import { Menu, Switch } from 'antd'
 import { Outlet, useLocation, useNavigate } from 'react-router'
 import { useAppStore } from '@/store'
@@ -16,10 +24,15 @@ function AppLayout() {
   const { pathname } = useLocation()
   const { appState, setAppState } = useAppStore()
   const isSide = appState.layoutMode === 'side'
+  const isDark = appState.darkMode
   const selectedKey = `/${pathname.split('/')[1]}`
 
   const header = (
-    <header className="h-15 border-b border-gray-200 bg-white px-6 shrink-0 flex items-center">
+    <header
+      className={`h-15 border-b px-6 shrink-0 flex items-center ${
+        isDark ? 'border-gray-800 bg-gray-950 text-white' : 'border-gray-200 bg-white'
+      }`}
+    >
       <h1 className="mr-8 whitespace-nowrap text-lg font-semibold">Interview React</h1>
       {!isSide && (
         <Menu
@@ -31,15 +44,26 @@ function AppLayout() {
           style={{ lineHeight: '60px' }}
         />
       )}
-      <span className="ml-auto flex items-center gap-2 text-sm text-gray-500">
-        <Switch
-          checked={isSide}
-          onChange={(v) => setAppState({ layoutMode: v ? 'side' : 'top' })}
-          checkedChildren={<MenuFoldOutlined />}
-          unCheckedChildren={<MenuUnfoldOutlined />}
-        />
-        侧边栏
-      </span>
+      <div className={`ml-auto flex items-center gap-4 text-sm ${isDark ? 'text-gray-300' : 'text-gray-500'}`}>
+        <span className="flex items-center gap-2">
+          <Switch
+            checked={isDark}
+            onChange={(checked) => setAppState({ darkMode: checked, theme: checked ? 'dark' : 'light' })}
+            checkedChildren={<MoonOutlined />}
+            unCheckedChildren={<SunOutlined />}
+          />
+          主题模式
+        </span>
+        <span className="flex items-center gap-2">
+          <Switch
+            checked={isSide}
+            onChange={(v) => setAppState({ layoutMode: v ? 'side' : 'top' })}
+            checkedChildren={<MenuFoldOutlined />}
+            unCheckedChildren={<MenuUnfoldOutlined />}
+          />
+          侧边栏
+        </span>
+      </div>
     </header>
   )
 
@@ -64,7 +88,10 @@ function AppLayout() {
       {isSide ? sidebar : header}
       <div className="flex-1 overflow-hidden flex flex-col">
         {isSide && header}
-        <main className="flex-1 overflow-hidden flex flex-col" style={{ position: 'relative' }}>
+        <main
+          className={`flex-1 overflow-hidden flex flex-col ${isDark ? 'bg-gray-950' : 'bg-white'}`}
+          style={{ position: 'relative' }}
+        >
           <Outlet />
         </main>
       </div>
