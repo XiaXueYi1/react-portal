@@ -26,6 +26,7 @@ export interface CanvasSummary {
 export interface CanvasListParams {
   page?: number
   pageSize?: number
+  keyword?: string
 }
 
 export interface CanvasListResponse {

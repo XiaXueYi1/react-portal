@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import type { TablePaginationConfig } from 'antd'
 import { Button, Input, Popconfirm, Table, Tag, message } from 'antd'
 import { PlusOutlined, SearchOutlined } from '@ant-design/icons'
@@ -13,17 +13,17 @@ export default function CanvasList() {
   const [list, setList] = useState<CanvasSummary[]>([])
   const [loading, setLoading] = useState(false)
   const [keyword, setKeyword] = useState('')
-  const [searchText, setSearchText] = useState('')
   const [pagination, setPagination] = useState({
     current: 1,
     pageSize: 10,
     total: 0,
   })
 
-  const fetchList = useCallback(async (page = pagination.current, pageSize = pagination.pageSize) => {
+  const fetchList = useCallback(async (page = pagination.current, pageSize = pagination.pageSize, searchKeyword?: string) => {
     setLoading(true)
+    const kw = searchKeyword?.trim()
     try {
-      const data = await CanvasApi.getCanvasList({ page, pageSize })
+      const data = await CanvasApi.getCanvasList(kw ? { page, pageSize, keyword: kw } : { page, pageSize })
       setList(data.list)
       setPagination({
         current: data.page,
@@ -42,15 +42,9 @@ export default function CanvasList() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  const filtered = useMemo(() => {
-    if (!searchText.trim()) return list
-    const kw = searchText.trim().toLowerCase()
-    return list.filter((item) => item.name.toLowerCase().includes(kw))
-  }, [list, searchText])
-
   const handleSearch = useCallback(() => {
-    setSearchText(keyword.trim())
-  }, [keyword])
+    void fetchList(1, pagination.pageSize, keyword)
+  }, [fetchList, keyword, pagination.pageSize])
 
   const handleTableChange = useCallback((nextPagination: TablePaginationConfig) => {
     const nextPage = nextPagination.current ?? 1
@@ -141,7 +135,7 @@ export default function CanvasList() {
       <Table
         rowKey="id"
         columns={columns}
-        dataSource={filtered}
+        dataSource={list}
         loading={loading}
         onChange={handleTableChange}
         pagination={{
