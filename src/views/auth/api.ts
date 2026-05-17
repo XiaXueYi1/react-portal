@@ -1,4 +1,4 @@
-import AuthApi from '@/service/auth'
+import AuthApi from './auth'
 import type { LoginForm, LoginResponse } from './types'
 
 class LoginApi {

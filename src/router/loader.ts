@@ -1,5 +1,5 @@
 import { redirect } from "react-router"
-import AuthApi from '@/service/auth'
+import AuthApi from '@/views/auth/auth'
 import { useAuthStore } from '@/store/auth'
 
 export const rootLoader = async ({ request }: { request: Request }) => {

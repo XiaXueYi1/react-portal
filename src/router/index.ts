@@ -53,7 +53,7 @@ const router = createBrowserRouter([
     {
         path: "/login",
         HydrateFallback: () => AppLoadingPage(),
-        lazy: lazyComponent(() => import('@/views/login/index.tsx')),
+        lazy: lazyComponent(() => import('@/views/auth/login/index.tsx')),
     },
 ])
 
