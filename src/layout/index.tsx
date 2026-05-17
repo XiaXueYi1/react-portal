@@ -29,11 +29,10 @@ function AppLayout() {
 
   const header = (
     <header
-      className={`h-15 border-b px-6 shrink-0 flex items-center ${
-        isDark ? 'border-gray-800 bg-gray-950 text-white' : 'border-gray-200 bg-white'
-      }`}
+      className={`h-15 border-b px-6 shrink-0 flex items-center ${isDark ? 'border-gray-800 bg-gray-950 text-white' : 'border-gray-200 bg-white'
+        }`}
     >
-      <h1 className="mr-8 whitespace-nowrap text-lg font-semibold">Interview React</h1>
+      <h1 className="mr-8 whitespace-nowrap text-lg font-semibold">Frontend-Portal</h1>
       {!isSide && (
         <Menu
           mode="horizontal"
@@ -70,7 +69,7 @@ function AppLayout() {
   const sidebar = isSide && (
     <aside className="w-60 shrink-0 bg-gray-900 flex flex-col">
       <div className="h-15 shrink-0 border-b border-gray-700 px-6 flex items-center">
-        <h1 className="text-lg font-semibold text-white">Interview React</h1>
+        <h1 className="text-lg font-semibold text-white">Frontend-Portal</h1>
       </div>
       <Menu
         theme="dark"

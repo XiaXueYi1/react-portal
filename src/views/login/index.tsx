@@ -26,7 +26,7 @@ function Login() {
         <div className="min-h-screen flex items-center justify-center bg-gray-50">
             <Card className="w-100 shadow-md">
                 <div className="text-center mb-6">
-                    <Title level={3}>Interview React</Title>
+                    <Title level={3}>Frontend-Portal</Title>
                     <Text type="secondary">登录以继续</Text>
                 </div>
 

@@ -10,7 +10,7 @@ function Home() {
                 <HomeOutlined className="mr-2" />
                 首页
             </Title>
-            <p className="text-gray-500">欢迎使用 Interview React</p>
+            <p className="text-gray-500">欢迎使用 Frontend-Portal</p>
         </div>
     )
 }
