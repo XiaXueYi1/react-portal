@@ -10,7 +10,7 @@ permissions:
   contents: read
 
 env:
-  VITE_API_URL: http://47.98.111.86:9000/api
+  VITE_API_URL: http://47.98.111.86:9000
   VITE_BASE_URL: /api
 
 jobs:
