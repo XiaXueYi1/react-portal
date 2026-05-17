@@ -17,6 +17,7 @@ const instance = axios.create({
 })
 
 instance.interceptors.request.use((config) => {
+    console.log('[api request]', config, config.baseURL, config.url, config.withCredentials)
     return config
 })
 
