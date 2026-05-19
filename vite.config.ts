@@ -85,20 +85,6 @@ export default defineConfig(({ mode }) => {
                   /\/(@tanstack\/react-query|zustand)\//.test(id),
                 priority: 45,
               },
-              // antd 完整依赖树必须在同一 chunk，不能拆散
-              {
-                name: 'antd-vendor',
-                test: (id: string) => {
-                  if (!id.includes('node_modules')) return false
-                  return (
-                    /\/antd\//.test(id) ||
-                    /\/@ant-design\/icons\//.test(id) ||
-                    /\/rc-[^/]+\//.test(id) ||
-                    /\/@rc-component\//.test(id)
-                  )
-                },
-                priority: 40,
-              },
               {
                 name: 'antd-x-vendor',
                 test: (id: string) =>
