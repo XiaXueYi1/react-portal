@@ -68,55 +68,69 @@ export default defineConfig(({ mode }) => {
             return 'assets/[name]-[hash][extname]'
           },
           codeSplitting: {
-            minSize: 10000,   // 10KB，避免过多微小 chunk
-            maxSize: 250000,  // 250KB，更有利于缓存命中和首屏
+            minSize: 10000,
+            maxSize: 250000,
             groups: [
-              // 【优先级最高】React 核心生态，极稳定，长期缓存
               {
                 name: 'react-vendor',
-                test: /node_modules[\\/](?:react|react-dom|react-router|scheduler)(?:[\\/]|$)/,
+                test: (id: string) =>
+                  id.includes('node_modules') &&
+                  /\/(react|react-dom|react-router|scheduler)\//.test(id),
                 priority: 50,
               },
-              // 状态管理和请求，稳定但更新频率略高于 React
               {
                 name: 'state-vendor',
-                test: /node_modules[\\/](?:@tanstack[\\/]react-query|zustand)(?:[\\/]|$)/,
+                test: (id: string) =>
+                  id.includes('node_modules') &&
+                  /\/(@tanstack\/react-query|zustand)\//.test(id),
                 priority: 45,
               },
-              // Ant Design 核心 UI，体积大，单独隔离
+              // antd 完整依赖树必须在同一 chunk，不能拆散
               {
                 name: 'antd-vendor',
-                test: /node_modules[\\/](?:antd|@ant-design[\\/]icons|rc-[^/]+)(?:[\\/]|$)/,
+                test: (id: string) => {
+                  if (!id.includes('node_modules')) return false
+                  return (
+                    /\/antd\//.test(id) ||
+                    /\/@ant-design\/icons\//.test(id) ||
+                    /\/rc-[^/]+\//.test(id) ||
+                    /\/@rc-component\//.test(id)
+                  )
+                },
                 priority: 40,
               },
-              // Ant Design X（AI 组件），依赖和更新频率与 antd 不同
               {
                 name: 'antd-x-vendor',
-                test: /node_modules[\\/](?:@ant-design[\\/]x(?!-markdown)|@ant-design[\\/]x-markdown)(?:[\\/]|$)/,
+                test: (id: string) =>
+                  id.includes('node_modules') &&
+                  /\/@ant-design\/x(-markdown)?\//.test(id),
                 priority: 38,
               },
-              // Markdown 渲染链（可能含 remark/highlight.js），体积重
               {
                 name: 'markdown-vendor',
-                test: /node_modules[\\/](?:remark|rehype|unified|hast|mdast|micromark|highlight\.js|lowlight|refractor|prismjs)(?:[\\/]|$)/,
+                test: (id: string) =>
+                  id.includes('node_modules') &&
+                  /\/(remark|rehype|unified|hast|mdast|micromark|highlight\.js|lowlight|refractor|prismjs)\//.test(id),
                 priority: 35,
               },
-              // 画布/流程图，体积最大，完全异步加载
               {
                 name: 'canvas-vendor',
-                test: /node_modules[\\/](?:@antv[\\/]x6|@antv[\\/]x6-react-shape|insert-css)(?:[\\/]|$)/,
+                test: (id: string) =>
+                  id.includes('node_modules') &&
+                  /\/(@antv\/x6|@antv\/x6-react-shape|insert-css)\//.test(id),
                 priority: 30,
               },
-              // ECharts，按需加载时可进一步拆，这里先整体隔离
               {
                 name: 'charts-vendor',
-                test: /node_modules[\\/]echarts(?:[\\/]|$)/,
+                test: (id: string) =>
+                  id.includes('node_modules') && /\/echarts\//.test(id),
                 priority: 30,
               },
-              // 工具库：稳定、轻量，单独缓存
               {
                 name: 'utils-vendor',
-                test: /node_modules[\\/](?:dayjs|axios)(?:[\\/]|$)/,
+                test: (id: string) =>
+                  id.includes('node_modules') &&
+                  /\/(dayjs|axios)\//.test(id),
                 priority: 20,
               },
             ],
