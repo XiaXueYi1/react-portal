@@ -73,8 +73,8 @@ export default defineConfig(({ mode }) => {
                 priority: 50,
               },
               {
-                name: 'canvas-vendor',
-                test: /node_modules[\\/](?:\.pnpm[\\/][^\\/]+[\\/]node_modules[\\/])?(?:@antv[\\/]x6|@antv[\\/]x6-react-shape|insert-css)(?:[\\/]|$)/,
+                name: 'x6-vendor',
+                test: /node_modules[\\/](?:\.pnpm[\\/][^\\/]+[\\/]node_modules[\\/])?@antv[\\/]x6(?:[\\/]|$)/,
                 priority: 30,
               },
               {
