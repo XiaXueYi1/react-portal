@@ -6,27 +6,35 @@ import viteCompression from 'vite-plugin-compression2'
 import { visualizer } from 'rollup-plugin-visualizer'
 import { ViteImageOptimizer } from 'vite-plugin-image-optimizer'
 
+const escapeRegExp = (value: string) => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+
+const toPackagePattern = (packageName: string) => packageName.split('/').map(escapeRegExp).join(String.raw`[\\/]`)
+
+const createVendorGroup = (name: string, packages: string[], priority: number) => ({
+  name,
+  test: new RegExp(
+    String.raw`node_modules[\\/](?:\.pnpm[\\/][^\\/]+[\\/]node_modules[\\/])?(?:${packages.map(toPackagePattern).join('|')})(?:[\\/]|$)`,
+  ),
+  priority,
+})
+
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
   const enableAnalyze = mode === 'analyze' || env.ANALYZE === 'true'
-  const manualChunkGroups: Record<string, string[]> = {
-    'react-vendor': ['react', 'react-dom', 'react-router', '@tanstack/react-query', 'zustand'],
-    'antd-vendor': ['antd', '@ant-design/icons', '@ant-design/x', '@ant-design/x-markdown'],
-    'canvas-vendor': ['@antv/x6', '@antv/x6-react-shape', 'insert-css'],
-    'charts-vendor': ['echarts'],
-    'utils-vendor': ['axios', 'dayjs'],
-  }
-
-  const manualChunks = (moduleId: string) => {
-    if (!moduleId.includes('node_modules')) return undefined
-
-    const normalizedId = moduleId.replace(/\\/g, '/')
-    const match = Object.entries(manualChunkGroups).find(([, packages]) =>
-      packages.some((packageName) => normalizedId.includes(`/node_modules/${packageName}/`)),
-    )
-
-    return match?.[0] ?? 'vendor'
-  }
+  const vendorGroups = [
+    createVendorGroup('react-vendor', ['react', 'react-dom', 'react-router', '@tanstack/react-query', 'zustand'], 40),
+    createVendorGroup('antd-core', ['antd'], 35),
+    createVendorGroup('antd-icons', ['@ant-design/icons'], 34),
+    createVendorGroup('antd-x', ['@ant-design/x', '@ant-design/x-markdown'], 33),
+    createVendorGroup('canvas-vendor', ['@antv/x6', '@antv/x6-react-shape', 'insert-css'], 30),
+    createVendorGroup('charts-vendor', ['echarts'], 30),
+    createVendorGroup('utils-vendor', ['axios', 'dayjs'], 25),
+    {
+      name: 'vendor',
+      test: /node_modules/,
+      priority: 10,
+    },
+  ]
 
   return {
     plugins: [
@@ -59,7 +67,7 @@ export default defineConfig(({ mode }) => {
       },
     },
     build: {
-      rollupOptions: {
+      rolldownOptions: {
         output: {
           entryFileNames: 'assets/js/[name]-[hash].js',
           chunkFileNames: 'assets/js/[name]-[hash].js',
@@ -76,7 +84,11 @@ export default defineConfig(({ mode }) => {
 
             return 'assets/[name]-[hash][extname]'
           },
-          manualChunks,
+          codeSplitting: {
+            minSize: 20000,
+            maxSize: 450000,
+            groups: vendorGroups,
+          },
         },
       },
     },
