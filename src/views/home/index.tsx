@@ -79,8 +79,8 @@ export default function Home() {
       />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(147,197,253,0.18),transparent_42%),radial-gradient(circle_at_70%_58%,rgba(103,232,249,0.16),transparent_44%)]" />
 
-      <div className="relative z-10 flex h-full -translate-y-14 flex-col">
-        <div className="flex h-[28%] items-end justify-center px-8 pb-10">
+      <div className="relative z-10 flex h-full flex-col">
+        <div className="flex h-[30%] items-end justify-center px-8 pb-10">
           <div className="w-full max-w-6xl">
             <div className="relative">
               <input
@@ -108,7 +108,7 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="flex h-[72%] justify-center px-8 pt-4 pb-8">
+        <div className="flex h-[70%] justify-center px-8 pt-4 pb-8">
           <div className="flex h-full min-h-0 w-full max-w-6xl flex-col">
             <div className="mb-4 flex items-center justify-between gap-4">
               <h2 className="m-0 text-2xl text-gray-700/90">近期编辑画布</h2>
@@ -122,7 +122,7 @@ export default function Home() {
               </button>
             </div>
 
-            <div className="min-h-0 flex-1 overflow-hidden">
+            <div className="home-card-scroll min-h-0 flex-1 overflow-y-auto pr-2">
               {loading ? (
                 <div className="grid content-start grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
                   {Array.from({ length: 6 }).map((_, index) => (
