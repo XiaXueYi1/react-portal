@@ -63,27 +63,6 @@ export default defineConfig(({ mode }) => {
 
             return 'assets/[name]-[hash][extname]'
           },
-          codeSplitting: {
-            minSize: 10000,
-            maxSize: 500000,
-            groups: [
-              {
-                name: 'react-vendor',
-                test: /node_modules[\\/](?:\.pnpm[\\/][^\\/]+[\\/]node_modules[\\/])?(?:react|react-dom|react-router|scheduler)(?:[\\/]|$)/,
-                priority: 50,
-              },
-              {
-                name: 'x6-vendor',
-                test: /node_modules[\\/](?:\.pnpm[\\/][^\\/]+[\\/]node_modules[\\/])?@antv[\\/]x6(?:[\\/]|$)/,
-                priority: 30,
-              },
-              {
-                name: 'charts-vendor',
-                test: /node_modules[\\/](?:\.pnpm[\\/][^\\/]+[\\/]node_modules[\\/])?echarts(?:[\\/]|$)/,
-                priority: 30,
-              },
-            ],
-          },
         },
       },
     },
