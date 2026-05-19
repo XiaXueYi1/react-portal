@@ -9,15 +9,12 @@ import { ViteImageOptimizer } from 'vite-plugin-image-optimizer'
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
   const enableAnalyze = mode === 'analyze' || env.ANALYZE === 'true'
-  // 只在明确需要时才优化图片（CI 或 OPTIMIZE_IMG=true）
-  const enableImageOpt = env.OPTIMIZE_IMG === 'true' || mode === 'production'
+  const enableImageOpt = env.OPTIMIZE_IMG === 'true'
 
   return {
     plugins: [
       react(),
       tailwindcss(),
-
-      // 图片优化：仅 production 模式启用，避免日常 build 变慢
       enableImageOpt && ViteImageOptimizer({
         png: { quality: 80 },
         jpeg: { quality: 80 },
@@ -25,16 +22,12 @@ export default defineConfig(({ mode }) => {
         webp: { quality: 80 },
         avif: { quality: 70 },
       }),
-
-      // 压缩：只用 brotli 即可，nginx 同时支持时优先用 brotli
-      // gzip 作为降级保留；两个都跑会让 build 时间 ×2
       viteCompression({
         algorithms: ['brotliCompress'],
         threshold: 10240,
         deleteOriginalAssets: false,
         skipIfLargerOrEqual: true,
       }),
-
       enableAnalyze && visualizer({
         filename: 'dist/stats.html',
         template: 'treemap',
@@ -43,28 +36,31 @@ export default defineConfig(({ mode }) => {
         open: false,
       }),
     ].filter(Boolean),
-
     resolve: {
       alias: {
         '@': path.resolve(__dirname, './src'),
       },
     },
-
     build: {
-      // Vite 8 已内置 rolldown，无需额外配置
-      // 类型检查从 build 流程剥离（见下方说明）
+      minify: 'oxc',
       rolldownOptions: {
+        checks: {
+          pluginTimings: false,
+        },
         output: {
           entryFileNames: 'assets/js/[name]-[hash].js',
           chunkFileNames: 'assets/js/[name]-[hash].js',
           assetFileNames: (assetInfo) => {
             const name = assetInfo.names?.[0] ?? assetInfo.name ?? ''
+
             if (/\.(png|jpe?g|gif|svg|webp|avif)$/i.test(name)) {
               return 'assets/img/[name]-[hash][extname]'
             }
+
             if (/\.css$/i.test(name)) {
               return 'assets/css/[name]-[hash][extname]'
             }
+
             return 'assets/[name]-[hash][extname]'
           },
           codeSplitting: {
@@ -73,58 +69,24 @@ export default defineConfig(({ mode }) => {
             groups: [
               {
                 name: 'react-vendor',
-                test: (id: string) =>
-                  id.includes('node_modules') &&
-                  /\/(react|react-dom|react-router|scheduler)\//.test(id),
+                test: /node_modules[\\/](?:\.pnpm[\\/][^\\/]+[\\/]node_modules[\\/])?(?:react|react-dom|react-router|scheduler)(?:[\\/]|$)/,
                 priority: 50,
               },
               {
-                name: 'state-vendor',
-                test: (id: string) =>
-                  id.includes('node_modules') &&
-                  /\/(@tanstack\/react-query|zustand)\//.test(id),
-                priority: 45,
-              },
-              {
-                name: 'antd-x-vendor',
-                test: (id: string) =>
-                  id.includes('node_modules') &&
-                  /\/@ant-design\/x(-markdown)?\//.test(id),
-                priority: 38,
-              },
-              {
-                name: 'markdown-vendor',
-                test: (id: string) =>
-                  id.includes('node_modules') &&
-                  /\/(remark|rehype|unified|hast|mdast|micromark|highlight\.js|lowlight|refractor|prismjs)\//.test(id),
-                priority: 35,
-              },
-              {
                 name: 'canvas-vendor',
-                test: (id: string) =>
-                  id.includes('node_modules') &&
-                  /\/(@antv\/x6|@antv\/x6-react-shape|insert-css)\//.test(id),
+                test: /node_modules[\\/](?:\.pnpm[\\/][^\\/]+[\\/]node_modules[\\/])?(?:@antv[\\/]x6|@antv[\\/]x6-react-shape|insert-css)(?:[\\/]|$)/,
                 priority: 30,
               },
               {
                 name: 'charts-vendor',
-                test: (id: string) =>
-                  id.includes('node_modules') && /\/echarts\//.test(id),
+                test: /node_modules[\\/](?:\.pnpm[\\/][^\\/]+[\\/]node_modules[\\/])?echarts(?:[\\/]|$)/,
                 priority: 30,
-              },
-              {
-                name: 'utils-vendor',
-                test: (id: string) =>
-                  id.includes('node_modules') &&
-                  /\/(dayjs|axios)\//.test(id),
-                priority: 20,
               },
             ],
           },
         },
       },
     },
-
     server: {
       port: 9099,
       host: '0.0.0.0',
@@ -132,7 +94,7 @@ export default defineConfig(({ mode }) => {
         '/api': {
           target: env.VITE_API_URL || 'http://localhost:8080',
           changeOrigin: true,
-          rewrite: (path) => path.replace(/^\/api/, ''),
+          rewrite: (targetPath) => targetPath.replace(/^\/api/, ''),
         },
       },
     },
