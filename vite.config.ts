@@ -69,7 +69,7 @@ export default defineConfig(({ mode }) => {
           },
           codeSplitting: {
             minSize: 10000,
-            maxSize: 250000,
+            maxSize: 500000,
             groups: [
               {
                 name: 'react-vendor',
