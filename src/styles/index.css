@@ -14,33 +14,6 @@ body {
   min-height: 100dvh;
 }
 
-.app-shell {
-  min-height: 100vh;
-  min-height: 100dvh;
-  height: 100vh;
-  height: 100dvh;
-}
-
-.app-header {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-}
-
-.app-top-menu {
-  min-width: 0;
-  overflow-x: auto;
-  overflow-y: hidden;
-  scrollbar-width: none;
-}
-
-.app-top-menu::-webkit-scrollbar {
-  display: none;
-}
-
-.app-top-menu.ant-menu-horizontal {
-  line-height: 44px;
-}
-
 .responsive-table .ant-table {
   min-width: 720px;
 }
@@ -187,18 +160,6 @@ body {
 
 .chat-bubble-list .ant-bubble-list-item {
   width: 100%;
-}
-
-@media (min-width: 1024px) {
-  .app-header {
-    min-height: 60px;
-    grid-template-columns: minmax(0, auto) minmax(0, 1fr);
-    align-items: center;
-  }
-
-  .app-top-menu.ant-menu-horizontal {
-    line-height: 60px;
-  }
 }
 
 @media (max-width: 767px) {
