@@ -68,7 +68,7 @@ export default function Home() {
   }, [navigate, prompt])
 
   return (
-    <div className="relative size-full overflow-hidden bg-slate-950">
+    <div className="relative size-full overflow-y-auto bg-slate-950">
       <div
         className="absolute inset-0"
         style={{
@@ -79,8 +79,8 @@ export default function Home() {
       />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(147,197,253,0.18),transparent_42%),radial-gradient(circle_at_70%_58%,rgba(103,232,249,0.16),transparent_44%)]" />
 
-      <div className="relative z-10 flex h-full flex-col">
-        <div className="flex h-[30%] items-end justify-center px-8 pb-10">
+      <div className="relative z-10 flex min-h-full flex-col">
+        <div className="flex items-end justify-center px-4 pb-6 pt-10 sm:px-6 md:min-h-[30%] md:px-8 md:pb-10">
           <div className="w-full max-w-6xl">
             <div className="relative">
               <input
@@ -94,12 +94,12 @@ export default function Home() {
                 }}
                 placeholder="搜索画布或输入问题开始对话..."
                 maxLength={200}
-                className="w-full rounded-2xl border border-white/60 bg-white/70 px-6 py-5 pr-16 shadow-xl backdrop-blur-md transition-all focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-400/40"
+                className="w-full rounded-2xl border border-white/60 bg-white/80 px-4 py-4 pr-14 text-base shadow-xl backdrop-blur-md transition-all focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-400/40 sm:px-6 sm:py-5 sm:pr-16"
               />
               <button
                 type="button"
                 onClick={handleStartChat}
-                className="absolute right-3 top-1/2 grid size-11 -translate-y-1/2 place-items-center rounded-xl bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-lg transition-all hover:from-blue-600 hover:to-cyan-600 disabled:cursor-not-allowed disabled:opacity-50"
+                className="absolute right-2.5 top-1/2 grid size-10 -translate-y-1/2 place-items-center rounded-xl bg-blue-600 text-white shadow-lg transition-all hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50 sm:right-3 sm:size-11"
                 disabled={!prompt.trim()}
               >
                 <SearchOutlined className="text-base" />
@@ -108,10 +108,10 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="flex h-[70%] justify-center px-8 pt-4 pb-8">
+        <div className="flex flex-1 justify-center px-4 pb-6 pt-2 sm:px-6 md:px-8 md:pb-8 md:pt-4">
           <div className="flex h-full min-h-0 w-full max-w-6xl flex-col">
             <div className="mb-4 flex items-center justify-between gap-4">
-              <h2 className="m-0 text-2xl text-gray-700/90">近期编辑画布</h2>
+              <h2 className="m-0 text-xl font-semibold text-gray-700/90 sm:text-2xl">近期编辑画布</h2>
               <button
                 type="button"
                 onClick={() => navigate('/canvas-list')}
@@ -122,9 +122,9 @@ export default function Home() {
               </button>
             </div>
 
-            <div className="home-card-scroll min-h-0 flex-1 overflow-y-auto pr-2">
+            <div className="home-card-scroll min-h-0 flex-1 overflow-y-auto pr-0 sm:pr-2">
               {loading ? (
-                <div className="grid content-start grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                    <div className="grid content-start grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3">
                   {Array.from({ length: 6 }).map((_, index) => (
                     <div key={index} className="h-[188px] rounded-xl border border-white/40 bg-white/50 p-4 backdrop-blur-sm">
                       <Skeleton active paragraph={{ rows: 3 }} />
@@ -132,15 +132,15 @@ export default function Home() {
                   ))}
                 </div>
               ) : recentCanvases.length > 0 ? (
-                <div className="grid content-start grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                    <div className="grid content-start grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3">
                   {recentCanvases.map((canvas) => (
                     <button
                       key={canvas.id}
                       type="button"
                       onClick={() => navigate(`/canvas?id=${canvas.id}`)}
-                      className="group h-[188px] cursor-pointer overflow-hidden rounded-xl border border-white/40 bg-white/50 text-left shadow-lg backdrop-blur-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl"
+                      className="group h-[176px] cursor-pointer overflow-hidden rounded-xl border border-white/50 bg-white/65 text-left shadow-lg backdrop-blur-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl sm:h-[188px]"
                     >
-                      <div className="h-[140px] overflow-hidden bg-gradient-to-br from-gray-50/80 to-blue-50/50">
+                      <div className="h-[128px] overflow-hidden bg-gradient-to-br from-gray-50/80 to-blue-50/50 sm:h-[140px]">
                         <FlowPreview thumbnail={canvas.thumbnail} />
                       </div>
                       <div className="bg-white/40 px-4 py-3">

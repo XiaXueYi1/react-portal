@@ -42,7 +42,7 @@ export default function Charts() {
                 <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_90%,rgba(165,243,252,0.1),transparent_50%)]" />
             </div>
 
-            <div className="relative z-10 flex h-full min-h-[720px] flex-col gap-8 px-[10%] py-8">
+            <div className="relative z-10 flex min-h-full flex-col gap-6 px-4 py-5 sm:px-6 lg:h-full lg:min-h-[720px] lg:gap-8 lg:px-[10%] lg:py-8">
                 {error ? (
                     <Alert
                         type="error"

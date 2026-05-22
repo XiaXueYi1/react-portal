@@ -85,25 +85,25 @@ function ChartPanel({ title, description, color, icon, data, loading }: ChartPan
 
     return (
         <section className="flex min-h-0 flex-1 flex-col">
-            <div className="mb-4 flex items-center justify-between gap-4">
-                <div className="flex items-center gap-3">
-                    <span className="grid size-10 place-items-center rounded-xl bg-white/70 text-xl shadow-sm" style={{ color }}>
+            <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
+                <div className="flex min-w-0 items-center gap-3">
+                    <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-white/70 text-xl shadow-sm" style={{ color }}>
                         {icon}
                     </span>
-                    <div>
-                        <h2 className="m-0 text-2xl text-gray-700/90">{title}</h2>
+                    <div className="min-w-0">
+                        <h2 className="m-0 text-xl font-semibold text-gray-700/90 sm:text-2xl">{title}</h2>
                         <p className="m-0 mt-1 text-sm text-gray-500">{description}</p>
                     </div>
                 </div>
-                <div className="text-right">
-                    <div className="text-3xl font-semibold text-gray-800">{data?.total ?? 0}</div>
+                <div className="text-left sm:text-right">
+                    <div className="text-2xl font-semibold text-gray-800 sm:text-3xl">{data?.total ?? 0}</div>
                     <div className="text-xs text-gray-500">
                         {data ? formatStatisticDateRange(data.startDate, data.endDate) : '最近 7 天'}
                     </div>
                 </div>
             </div>
 
-            <div className="min-h-0 flex-1 rounded-3xl border border-white/60 bg-white/70 p-6 shadow-xl backdrop-blur-md">
+            <div className="min-h-0 flex-1 rounded-2xl border border-white/60 bg-white/75 p-3 shadow-xl backdrop-blur-md sm:rounded-3xl sm:p-6">
                 {loading ? (
                     <Skeleton active paragraph={{ rows: 6 }} />
                 ) : data ? (

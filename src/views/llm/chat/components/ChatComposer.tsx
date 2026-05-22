@@ -28,7 +28,7 @@ function ChatComposer({ loading, disabled, onSubmit, onStop }: ChatComposerProps
     }
 
     return (
-        <div className="border-t border-slate-200/80 bg-white px-4 py-4">
+        <div className="border-t border-slate-200/80 bg-white px-3 py-3 sm:px-4 sm:py-4">
             <Sender
                 value={value}
                 loading={loading}
@@ -71,14 +71,14 @@ function ChatComposer({ loading, disabled, onSubmit, onStop }: ChatComposerProps
                     input: {
                         background: '#f8fafc',
                         borderRadius: 22,
-                        padding: '18px 96px 18px 18px',
-                        minHeight: 112,
+                        padding: '16px 78px 16px 16px',
+                        minHeight: 96,
                         border: '1px solid rgba(226, 232, 240, 0.9)',
                     },
                     suffix: {
                         position: 'absolute',
-                        right: 22,
-                        bottom: 22,
+                        right: 16,
+                        bottom: 16,
                         zIndex: 2,
                         padding: 0,
                         margin: 0,

@@ -286,9 +286,9 @@ function Canvas() {
   }, [canvasDetail, edges, nodes])
 
   return (
-    <div className="flex-1 flex min-h-0">
-      <aside className="w-64 shrink-0 border-r border-gray-200 bg-white flex flex-col">
-        <div className="p-3 border-b border-gray-100">
+    <div className="flex min-h-0 flex-1 flex-col bg-slate-50 lg:flex-row">
+      <aside className="flex max-h-[32dvh] shrink-0 flex-col border-b border-gray-200 bg-white lg:max-h-none lg:w-64 lg:border-b-0 lg:border-r">
+        <div className="border-b border-gray-100 p-3">
           <Input
             value={canvasDetail?.name ?? ''}
             placeholder="画布名称"
@@ -297,16 +297,16 @@ function Canvas() {
           />
         </div>
 
-        <div className="p-3 border-b border-gray-100">
+        <div className="border-b border-gray-100 p-3">
           <h3 className="text-xs font-semibold text-gray-400 tracking-wide">节点列表</h3>
         </div>
-        <div className="flex-1 overflow-auto p-2">
+        <div className="mobile-horizontal-scroll flex-1 overflow-auto p-2">
           <NodeTree framework={framework} templates={templates} loading={loading} />
         </div>
       </aside>
 
-      <main className="flex-1 flex flex-col overflow-hidden min-w-0">
-        <div className="h-11 shrink-0 border-b border-gray-200 bg-white flex items-center px-4 gap-3">
+      <main className="flex min-h-[58dvh] min-w-0 flex-1 flex-col overflow-hidden lg:min-h-0">
+        <div className="flex shrink-0 flex-wrap items-center gap-2 border-b border-gray-200 bg-white px-3 py-2 sm:flex-nowrap sm:gap-3 sm:px-4">
           {framework ? (
             <Tag color={framework === 'vue' ? CATEGORY_COLORS.VUE : CATEGORY_COLORS.REACT}>
               已锁定：{framework === 'vue' ? 'Vue' : 'React'}
@@ -314,7 +314,7 @@ function Canvas() {
           ) : (
             <Tag>未锁定</Tag>
           )}
-          <span className="min-w-0 flex-1 truncate text-sm text-gray-500">
+          <span className="min-w-[140px] flex-1 truncate text-sm text-gray-500">
             {canvasDetail?.name ?? '未选择画布'}
             {dirty ? ' - 未保存' : ''}
           </span>
@@ -329,7 +329,7 @@ function Canvas() {
           </Button>
         </div>
 
-        <div className="relative flex-1 min-h-0">
+        <div className="relative min-h-0 flex-1">
           {canvasDetail ? (
             <X6Canvas
               key={canvasDetail.id || 'new'}

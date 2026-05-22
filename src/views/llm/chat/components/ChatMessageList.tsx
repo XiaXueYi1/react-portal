@@ -37,7 +37,7 @@ function ChatMessageList({ loading, messages, isStreaming }: ChatMessageListProp
     // 状态 2：空消息（新会话 或 选中会话无消息）
     if (messages.length === 0) {
         return (
-            <div className="flex min-h-0 flex-1 items-center justify-center bg-[linear-gradient(180deg,#ffffff_0%,#f8fafc_100%)] p-6">
+            <div className="flex min-h-0 flex-1 items-center justify-center bg-[linear-gradient(180deg,#ffffff_0%,#f8fafc_100%)] p-4 sm:p-6">
                 <div className="w-full max-w-2xl">
                     <Welcome
                         variant="borderless"
@@ -45,8 +45,8 @@ function ChatMessageList({ loading, messages, isStreaming }: ChatMessageListProp
                         title="开始一段新的对话"
                         description="左侧保留历史会话，右侧专注当前聊天。发送第一条消息后会自动创建会话并持续返回流式内容。"
                         classNames={{
-                            title: 'text-3xl font-semibold tracking-tight text-slate-950',
-                            description: 'max-w-xl text-base leading-8 text-slate-500',
+                            title: 'text-2xl font-semibold tracking-tight text-slate-950 sm:text-3xl',
+                            description: 'max-w-xl text-sm leading-7 text-slate-500 sm:text-base sm:leading-8',
                         }}
                     />
                 </div>
@@ -58,7 +58,7 @@ function ChatMessageList({ loading, messages, isStreaming }: ChatMessageListProp
     return (
         <div
             ref={containerRef}
-            className="chat-message-scroll min-h-0 flex-1 overflow-y-auto bg-[linear-gradient(180deg,#ffffff_0%,#f8fafc_100%)] px-4 py-6 md:px-6"
+            className="chat-message-scroll min-h-0 flex-1 overflow-y-auto bg-[linear-gradient(180deg,#ffffff_0%,#f8fafc_100%)] px-3 py-4 sm:px-4 sm:py-6 md:px-6"
         >
             <div className="flex w-full flex-col gap-7 pb-3">
                 <Bubble.List
@@ -110,7 +110,7 @@ function ChatMessageList({ loading, messages, isStreaming }: ChatMessageListProp
                         // typing: 空内容 + 生成中 → 显示打字动画
                         typing: message.status === 'generating' && !message.content,
                         style: {
-                            maxWidth: 'min(78%, 960px)',
+                            maxWidth: 'min(92%, 960px)',
                         },
                     }))}
                     style={{ background: 'transparent', width: '100%' }}

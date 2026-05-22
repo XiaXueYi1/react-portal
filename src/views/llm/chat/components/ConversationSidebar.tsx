@@ -17,12 +17,12 @@ function ConversationSidebar({
     onDelete,
 }: ConversationSidebarProps) {
     return (
-        <aside className="flex min-h-0 h-full flex-col overflow-hidden rounded-[28px] border border-slate-200/80 bg-[#fbfcfe] p-4 shadow-[0_20px_80px_rgba(15,23,42,0.06)]">
+        <aside className="flex max-h-[34dvh] min-h-[220px] flex-col overflow-hidden rounded-2xl border border-slate-200/80 bg-[#fbfcfe] p-3 shadow-[0_20px_80px_rgba(15,23,42,0.06)] lg:h-full lg:max-h-none lg:min-h-0 lg:rounded-[28px] lg:p-4">
             {/* 顶部：标题 + 新建按钮 */}
-            <div className="mb-4 flex items-center justify-between gap-3 border-b border-slate-200/80 pb-4">
+            <div className="mb-3 flex items-center justify-between gap-3 border-b border-slate-200/80 pb-3 lg:mb-4 lg:pb-4">
                 <div>
-                    <p className="text-[11px] uppercase tracking-[0.24em] text-slate-400">History</p>
-                    <h2 className="mt-2 text-xl font-semibold tracking-tight text-slate-950">历史会话</h2>
+                    <p className="text-[11px] uppercase tracking-[0.18em] text-slate-400 lg:tracking-[0.24em]">History</p>
+                    <h2 className="mt-1 text-lg font-semibold tracking-tight text-slate-950 lg:mt-2 lg:text-xl">历史会话</h2>
                 </div>
                 {/* 点击触发 handleCreateConversation：清空选中 + 标记创建中 */}
                 <Button

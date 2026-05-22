@@ -537,8 +537,8 @@ function Chat() {
     // ==================== 渲染 ====================
 
     return (
-        <div className="chat-shell flex-1 overflow-auto min-h-0 p-4 md:p-5">
-            <div className="grid h-full min-h-0 gap-4 lg:grid-cols-[280px_minmax(0,1fr)] xl:grid-cols-[300px_minmax(0,1fr)]">
+        <div className="chat-shell min-h-0 flex-1 overflow-auto bg-slate-50 p-3 md:p-5">
+            <div className="grid min-h-full gap-3 lg:h-full lg:min-h-0 lg:grid-cols-[280px_minmax(0,1fr)] lg:gap-4 xl:grid-cols-[300px_minmax(0,1fr)]">
                 {/* 左侧：会话侧边栏 */}
                 <ConversationSidebar
                     loading={loadingConversations}
@@ -551,14 +551,14 @@ function Chat() {
                 />
 
                 {/* 右侧：对话主体 */}
-                <section className="flex min-h-0 flex-col overflow-hidden rounded-[28px] border border-slate-200/80 bg-white shadow-[0_20px_80px_rgba(15,23,42,0.08)]">
+                <section className="flex min-h-[58dvh] flex-col overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-[0_20px_80px_rgba(15,23,42,0.08)] lg:min-h-0 lg:rounded-[28px]">
                     {/* 顶部标题栏 */}
-                    <div className="flex items-center justify-between gap-4 border-b border-slate-200/80 px-6 py-4">
+                    <div className="flex items-center justify-between gap-3 border-b border-slate-200/80 px-4 py-3 sm:px-6 sm:py-4">
                         <div className="min-w-0">
-                            <p className="text-[11px] font-medium uppercase tracking-[0.26em] text-slate-400">
+                            <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-slate-400 sm:tracking-[0.26em]">
                                 Conversation
                             </p>
-                            <h1 className="mt-2 truncate text-lg font-semibold text-slate-950">
+                            <h1 className="mt-1 truncate text-base font-semibold text-slate-950 sm:mt-2 sm:text-lg">
                                 {activeConversation?.title || '新会话'}
                             </h1>
                         </div>
