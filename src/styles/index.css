@@ -14,16 +14,9 @@ body {
   min-height: 100dvh;
 }
 
-.responsive-table .ant-table {
-  min-width: 720px;
-}
-
-.responsive-table .ant-table-container {
-  overflow-x: auto;
-}
-
 .responsive-table .ant-pagination {
   row-gap: 8px;
+  padding-right: 12px;
 }
 
 .chat-bubble-list .ant-bubble-content {

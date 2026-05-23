@@ -103,9 +103,9 @@ export default function CanvasList() {
       title: '操作',
       key: 'actions',
       width: 128,
-      fixed: 'right' as const,
+      align: 'center' as const,
       render: (_: unknown, record: CanvasSummary) => (
-        <span className="flex justify-end gap-1">
+        <span className="flex justify-center gap-1">
           <Button type="link" size="small" onClick={() => navigate(`/canvas?id=${record.id}`)}>
             编辑
           </Button>
@@ -216,7 +216,6 @@ export default function CanvasList() {
         onChange={handleTableChange}
         className="responsive-table hidden rounded-xl border border-slate-200 bg-white shadow-sm md:block"
         tableLayout="fixed"
-        scroll={{ x: 820 }}
         pagination={{
           current: pagination.current,
           pageSize: pagination.pageSize,

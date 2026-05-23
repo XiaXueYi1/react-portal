@@ -92,7 +92,7 @@ export default function Home() {
                     handleStartChat()
                   }
                 }}
-                placeholder="搜索画布或输入问题开始对话..."
+                placeholder="输入问题开始对话..."
                 maxLength={200}
                 className="w-full rounded-2xl border border-white/60 bg-white/80 px-4 py-4 pr-14 text-base shadow-xl backdrop-blur-md transition-all focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-400/40 sm:px-6 sm:py-5 sm:pr-16"
               />

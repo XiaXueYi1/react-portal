@@ -25,8 +25,12 @@ function NodeCard({ node }: NodeCardProps) {
   return (
     <div
       style={{
-        width: '100%',
-        height: '100%',
+        width: NODE_W,
+        minWidth: NODE_W,
+        maxWidth: NODE_W,
+        height: NODE_H,
+        minHeight: NODE_H,
+        maxHeight: NODE_H,
         border: '1px solid #d9d9d9',
         borderRadius: 6,
         borderLeftWidth: 4,
