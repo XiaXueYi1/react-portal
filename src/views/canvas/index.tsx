@@ -17,6 +17,13 @@ import type {
   SaveCanvasPayload,
 } from './types'
 
+const DEFAULT_VIEWPORT = {
+  viewportZoom: 1,
+  autoFitViewport: true,
+  viewportX: 0,
+  viewportY: 0,
+}
+
 function normalizeFramework(nodes: CanvasNodeData[]): CanvasFramework {
   if (nodes.some((node) => node.category === 'VUE')) return 'vue'
   if (nodes.some((node) => node.category === 'REACT')) return 'react'
@@ -36,6 +43,10 @@ function normalizeCanvasDetail(raw: CanvasDetail): CanvasDetail {
 
   return {
     ...detail,
+    viewportZoom: detail.viewportZoom ?? DEFAULT_VIEWPORT.viewportZoom,
+    autoFitViewport: detail.autoFitViewport ?? DEFAULT_VIEWPORT.autoFitViewport,
+    viewportX: detail.viewportX ?? DEFAULT_VIEWPORT.viewportX,
+    viewportY: detail.viewportY ?? DEFAULT_VIEWPORT.viewportY,
     nodes: Array.isArray(detail.nodes) ? detail.nodes : [],
     edges: Array.isArray(detail.edges) ? detail.edges : [],
   }
@@ -48,6 +59,10 @@ function toSavePayload(detail: CanvasDetail, nodes: CanvasNodeData[], edges: Can
     description: detail.description ?? null,
     framework: normalizeFramework(nodes),
     thumbnail: detail.thumbnail ?? null,
+    viewportZoom: detail.viewportZoom ?? DEFAULT_VIEWPORT.viewportZoom,
+    autoFitViewport: detail.autoFitViewport ?? DEFAULT_VIEWPORT.autoFitViewport,
+    viewportX: detail.viewportX ?? DEFAULT_VIEWPORT.viewportX,
+    viewportY: detail.viewportY ?? DEFAULT_VIEWPORT.viewportY,
     nodes: nodes.map((node) => ({
       id: node.id,
       templateId: node.templateId,
@@ -137,6 +152,7 @@ function Canvas() {
         description: '',
         framework: null,
         thumbnail: null,
+        ...DEFAULT_VIEWPORT,
         nodes: [],
         edges: [],
       })
@@ -272,6 +288,16 @@ function Canvas() {
     setDirty(true)
   }, [])
 
+  const handleViewportChange = useCallback((viewport: {
+    viewportZoom: number
+    autoFitViewport: boolean
+    viewportX: number
+    viewportY: number
+  }) => {
+    setCanvasDetail((prev) => (prev ? { ...prev, ...viewport } : prev))
+    setDirty(true)
+  }, [])
+
   const handleSave = useCallback(async () => {
     if (!canvasDetail) return
 
@@ -347,6 +373,11 @@ function Canvas() {
               onEdgeCreated={handleEdgeCreated}
               onEdgeRemoved={handleEdgeRemoved}
               onDropFromTree={handleDropFromTree}
+              viewportZoom={canvasDetail.viewportZoom}
+              autoFitViewport={canvasDetail.autoFitViewport}
+              viewportX={canvasDetail.viewportX}
+              viewportY={canvasDetail.viewportY}
+              onViewportChange={handleViewportChange}
             />
           ) : (
             <div className="absolute inset-0 flex items-center justify-center bg-slate-50">
