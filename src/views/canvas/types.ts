@@ -42,6 +42,10 @@ export interface CanvasDetail {
   description?: string | null
   framework: CanvasFramework
   thumbnail?: string | null
+  viewportZoom?: number
+  autoFitViewport?: boolean
+  viewportX?: number
+  viewportY?: number
   isDeleted?: boolean
   createdAt?: string
   updatedAt?: string
@@ -84,6 +88,10 @@ export interface SaveCanvasPayload {
   description?: string | null
   framework?: CanvasFramework
   thumbnail?: string | null
+  viewportZoom?: number
+  autoFitViewport?: boolean
+  viewportX?: number
+  viewportY?: number
   nodes: Array<{
     id: string
     templateId: string
@@ -133,4 +141,14 @@ export interface X6CanvasProps {
   onEdgeCreated: (edge: CanvasEdgeData) => void
   onEdgeRemoved: (edgeId: string) => void
   onDropFromTree: (e: DragEvent, position?: { x: number; y: number }) => void
+  viewportZoom?: number
+  autoFitViewport?: boolean
+  viewportX?: number
+  viewportY?: number
+  onViewportChange?: (viewport: {
+    viewportZoom: number
+    autoFitViewport: boolean
+    viewportX: number
+    viewportY: number
+  }) => void
 }

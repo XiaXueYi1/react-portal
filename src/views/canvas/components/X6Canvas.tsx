@@ -24,6 +24,10 @@ const MIN_ZOOM = 0.5
 const MAX_ZOOM = 2
 const ZOOM_STEP = 0.1
 
+function clampZoom(value?: number) {
+  return Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, value ?? 1))
+}
+
 function NodeCard({ node }: NodeCardProps) {
   const data = node?.getData<CanvasNodeData>()
   if (!data) return null
@@ -130,6 +134,11 @@ const X6Canvas = forwardRef<X6CanvasHandle, X6CanvasProps>(
       onEdgeCreated,
       onEdgeRemoved,
       onDropFromTree,
+      viewportZoom,
+      autoFitViewport,
+      viewportX,
+      viewportY,
+      onViewportChange,
     },
     ref,
   ) => {
@@ -139,8 +148,16 @@ const X6Canvas = forwardRef<X6CanvasHandle, X6CanvasProps>(
     const clickTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
     const programmaticRemovedNodeIdsRef = useRef<Set<string>>(new Set())
     const loadingGraphRef = useRef(false)
+    const applyingViewportRef = useRef(false)
     const pendingGraphDataRef = useRef<{ nodes: CanvasNodeData[]; edges: CanvasEdgeData[] } | null>(null)
     const lastAppliedVersionRef = useRef(0)
+    const viewportRef = useRef({
+      viewportZoom,
+      autoFitViewport,
+      viewportX,
+      viewportY,
+      onViewportChange,
+    })
 
     const cbRef = useRef({
       onNodeClick,
@@ -162,7 +179,58 @@ const X6Canvas = forwardRef<X6CanvasHandle, X6CanvasProps>(
         onEdgeCreated,
         onEdgeRemoved,
       }
+      viewportRef.current = {
+        viewportZoom,
+        autoFitViewport,
+        viewportX,
+        viewportY,
+        onViewportChange,
+      }
     })
+
+    const emitViewportChange = useCallback((graph: Graph, autoFitViewportValue: boolean) => {
+      if (applyingViewportRef.current) return
+
+      const zoom = clampZoom(graph.zoom())
+      const translation = graph.translate()
+      viewportRef.current.onViewportChange?.({
+        viewportZoom: zoom,
+        autoFitViewport: autoFitViewportValue,
+        viewportX: translation.tx,
+        viewportY: translation.ty,
+      })
+    }, [])
+
+    const applyInitialViewport = useCallback((graph: Graph) => {
+      const {
+        viewportZoom: savedZoom,
+        autoFitViewport: shouldAutoFit = true,
+        viewportX: savedX = 0,
+        viewportY: savedY = 0,
+      } = viewportRef.current
+
+      applyingViewportRef.current = true
+      try {
+        graph.zoomTo(clampZoom(savedZoom), {
+          minScale: MIN_ZOOM,
+          maxScale: MAX_ZOOM,
+        })
+
+        if (shouldAutoFit) {
+          if (graph.getCells().length > 0) {
+            graph.centerContent({ useCellGeometry: true })
+          } else {
+            graph.center()
+          }
+        } else {
+          graph.translate(savedX, savedY)
+        }
+
+        setCurrentZoom(graph.zoom())
+      } finally {
+        applyingViewportRef.current = false
+      }
+    }, [])
 
     const setPortColor = useCallback((node: X6Node, portId: string, color: string) => {
       node.setPortProp(portId, 'attrs/circle/stroke', color)
@@ -215,11 +283,12 @@ const X6Canvas = forwardRef<X6CanvasHandle, X6CanvasProps>(
 
           graph.resetCells([...nodeCells, ...edgeCells])
           graph.getNodes().forEach((node) => syncNodePorts(node))
+          applyInitialViewport(graph)
         } finally {
           loadingGraphRef.current = false
         }
       },
-      [syncNodePorts],
+      [applyInitialViewport, syncNodePorts],
     )
 
     useEffect(() => {
@@ -297,6 +366,11 @@ const X6Canvas = forwardRef<X6CanvasHandle, X6CanvasProps>(
 
         graph.on('scale', ({ sx }: { sx: number }) => {
           setCurrentZoom(sx)
+          emitViewportChange(graph, false)
+        })
+
+        graph.on('translate', () => {
+          emitViewportChange(graph, false)
         })
 
         graph.on('edge:mouseleave', ({ edge }: { edge: Edge }) => {
@@ -418,7 +492,7 @@ const X6Canvas = forwardRef<X6CanvasHandle, X6CanvasProps>(
         graphRef.current?.dispose()
         graphRef.current = null
       }
-    }, [applyGraphData, syncNodePorts])
+    }, [applyGraphData, emitViewportChange, syncNodePorts])
 
     const addNode = useCallback((data: CanvasNodeData) => {
       const graph = graphRef.current
@@ -578,8 +652,9 @@ const X6Canvas = forwardRef<X6CanvasHandle, X6CanvasProps>(
           center: getViewportCenter(),
         })
         setCurrentZoom(graph.zoom())
+        emitViewportChange(graph, false)
       },
-      [getViewportCenter],
+      [emitViewportChange, getViewportCenter],
     )
 
     const handleZoomIn = useCallback(() => {
@@ -606,7 +681,8 @@ const X6Canvas = forwardRef<X6CanvasHandle, X6CanvasProps>(
         graph.center()
       }
       setCurrentZoom(graph.zoom())
-    }, [])
+      emitViewportChange(graph, true)
+    }, [emitViewportChange])
 
     const preventToolbarPan = useCallback((event: React.MouseEvent) => {
       event.stopPropagation()
