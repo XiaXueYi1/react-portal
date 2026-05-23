@@ -132,5 +132,5 @@ export interface X6CanvasProps {
   onNodeRemoved: (nodeId: string) => void
   onEdgeCreated: (edge: CanvasEdgeData) => void
   onEdgeRemoved: (edgeId: string) => void
-  onDropFromTree: (e: DragEvent) => void
+  onDropFromTree: (e: DragEvent, position?: { x: number; y: number }) => void
 }

@@ -1,4 +1,6 @@
-import { useEffect, useRef, forwardRef, useImperativeHandle, useCallback } from 'react'
+import { useEffect, useRef, forwardRef, useImperativeHandle, useCallback, useState } from 'react'
+import { AimOutlined, OneToOneOutlined, ZoomInOutlined, ZoomOutOutlined } from '@ant-design/icons'
+import { Button, Tooltip } from 'antd'
 import { Graph, Edge, Node as X6Node, type Cell } from '@antv/x6'
 import { register } from '@antv/x6-react-shape'
 import type { CanvasNodeData, CanvasEdgeData, NodeCardProps, X6CanvasHandle, X6CanvasProps } from '../types'
@@ -17,6 +19,10 @@ import {
 } from '../constants'
 
 export type { X6CanvasHandle } from '../types'
+
+const MIN_ZOOM = 0.5
+const MAX_ZOOM = 2
+const ZOOM_STEP = 0.1
 
 function NodeCard({ node }: NodeCardProps) {
   const data = node?.getData<CanvasNodeData>()
@@ -129,6 +135,7 @@ const X6Canvas = forwardRef<X6CanvasHandle, X6CanvasProps>(
   ) => {
     const containerRef = useRef<HTMLDivElement>(null)
     const graphRef = useRef<Graph | null>(null)
+    const [currentZoom, setCurrentZoom] = useState(1)
     const clickTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
     const programmaticRemovedNodeIdsRef = useRef<Set<string>>(new Set())
     const loadingGraphRef = useRef(false)
@@ -230,10 +237,13 @@ const X6Canvas = forwardRef<X6CanvasHandle, X6CanvasProps>(
           type: 'dot',
           args: { color: '#e2e8f0', thickness: 1 },
         },
-        panning: { enabled: true, modifiers: 'shift' },
+        panning: {
+          enabled: true,
+          eventTypes: ['leftMouseDown'],
+        },
         mousewheel: { enabled: true, modifiers: 'ctrl' },
         interacting: { nodeMovable: true },
-        translating: { restrict: true },
+        translating: { restrict: false },
         connecting: {
           connector: EDGE_CONNECTOR,
           connectionPoint: 'anchor',
@@ -283,6 +293,10 @@ const X6Canvas = forwardRef<X6CanvasHandle, X6CanvasProps>(
 
         graph.on('edge:mouseenter', ({ edge }: { edge: Edge }) => {
           edge.addTools([{ name: 'button-remove', args: { distance: -40 } }])
+        })
+
+        graph.on('scale', ({ sx }: { sx: number }) => {
+          setCurrentZoom(sx)
         })
 
         graph.on('edge:mouseleave', ({ edge }: { edge: Edge }) => {
@@ -369,6 +383,7 @@ const X6Canvas = forwardRef<X6CanvasHandle, X6CanvasProps>(
         })
 
         graphRef.current = graph
+        setCurrentZoom(graph.zoom())
 
         if (pendingGraphDataRef.current) {
           const pending = pendingGraphDataRef.current
@@ -535,12 +550,117 @@ const X6Canvas = forwardRef<X6CanvasHandle, X6CanvasProps>(
     }, [])
 
     const handleDrop = useCallback(
-      (e: React.DragEvent) => onDropFromTree(e),
+      (e: React.DragEvent) => {
+        const position = graphRef.current?.clientToLocal(e.clientX, e.clientY)
+        onDropFromTree(e, position ? { x: position.x, y: position.y } : undefined)
+      },
       [onDropFromTree],
     )
 
+    const getViewportCenter = useCallback(() => {
+      const graph = graphRef.current
+      const container = containerRef.current
+      if (!graph || !container) return undefined
+
+      const rect = container.getBoundingClientRect()
+      return graph.clientToLocal(rect.left + rect.width / 2, rect.top + rect.height / 2)
+    }, [])
+
+    const zoomTo = useCallback(
+      (nextZoom: number) => {
+        const graph = graphRef.current
+        if (!graph) return
+
+        const zoom = Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, Number(nextZoom.toFixed(2))))
+        graph.zoomTo(zoom, {
+          minScale: MIN_ZOOM,
+          maxScale: MAX_ZOOM,
+          center: getViewportCenter(),
+        })
+        setCurrentZoom(graph.zoom())
+      },
+      [getViewportCenter],
+    )
+
+    const handleZoomIn = useCallback(() => {
+      zoomTo(currentZoom + ZOOM_STEP)
+    }, [currentZoom, zoomTo])
+
+    const handleZoomOut = useCallback(() => {
+      zoomTo(currentZoom - ZOOM_STEP)
+    }, [currentZoom, zoomTo])
+
+    const handleZoomReset = useCallback(() => {
+      zoomTo(1)
+    }, [zoomTo])
+
+    const handleLocateContent = useCallback(() => {
+      const graph = graphRef.current
+      if (!graph) return
+
+      if (graph.getCells().length > 0) {
+        graph.centerContent({
+          useCellGeometry: true,
+        })
+      } else {
+        graph.center()
+      }
+      setCurrentZoom(graph.zoom())
+    }, [])
+
+    const preventToolbarPan = useCallback((event: React.MouseEvent) => {
+      event.stopPropagation()
+    }, [])
+
     return (
       <div className="absolute inset-0 overflow-hidden">
+        <div
+          className="absolute right-4 top-4 z-20 flex items-center gap-1.5 rounded-xl border border-slate-200/80 bg-white/90 p-1 shadow-lg backdrop-blur"
+          onMouseDown={preventToolbarPan}
+          onClick={preventToolbarPan}
+        >
+          <Tooltip title="放大">
+            <Button
+              type="text"
+              size="small"
+              icon={<ZoomInOutlined />}
+              disabled={currentZoom >= MAX_ZOOM}
+              aria-label="放大画布"
+              onClick={handleZoomIn}
+            />
+          </Tooltip>
+          <Tooltip title="缩小">
+            <Button
+              type="text"
+              size="small"
+              icon={<ZoomOutOutlined />}
+              disabled={currentZoom <= MIN_ZOOM}
+              aria-label="缩小画布"
+              onClick={handleZoomOut}
+            />
+          </Tooltip>
+          <Tooltip title="重置缩放">
+            <Button
+              type="text"
+              size="small"
+              icon={<OneToOneOutlined />}
+              aria-label="重置画布缩放"
+              onClick={handleZoomReset}
+            />
+          </Tooltip>
+          <span className="min-w-11 px-1 text-center text-xs font-medium tabular-nums text-slate-500">
+            {Math.round(currentZoom * 100)}%
+          </span>
+          <Tooltip title="定位内容">
+            <Button
+              type="text"
+              size="small"
+              icon={<AimOutlined />}
+              aria-label="智能定位画布内容"
+              onClick={handleLocateContent}
+            />
+          </Tooltip>
+        </div>
         <div
           ref={containerRef}
           className="absolute inset-0"

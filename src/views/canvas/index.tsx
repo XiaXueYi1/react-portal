@@ -149,7 +149,7 @@ function Canvas() {
   }, [initialCanvasId, loadCanvasDetail])
 
   const handleDropFromTree = useCallback(
-    (event: React.DragEvent) => {
+    (event: React.DragEvent, position?: { x: number; y: number }) => {
       if (!canvasDetail) {
         message.warning('请先创建或选择画布')
         return
@@ -174,6 +174,8 @@ function Canvas() {
       }
 
       const rect = (event.currentTarget as HTMLElement).getBoundingClientRect()
+      const dropX = position?.x ?? event.clientX - rect.left
+      const dropY = position?.y ?? event.clientY - rect.top
       const newNode: CanvasNodeData = {
         id: createLocalId('node'),
         templateId: template.id,
@@ -181,8 +183,8 @@ function Canvas() {
         category: template.category,
         description: template.description,
         note: '',
-        positionX: event.clientX - rect.left - 74,
-        positionY: event.clientY - rect.top - 26,
+        positionX: dropX - 74,
+        positionY: dropY - 26,
       }
 
       setNodes((prev) => [...prev, newNode])
