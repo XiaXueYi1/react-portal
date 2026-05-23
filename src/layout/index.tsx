@@ -5,8 +5,6 @@ import {
   MenuFoldOutlined,
   MenuUnfoldOutlined,
   MessageOutlined,
-  MoonOutlined,
-  SunOutlined,
   UnorderedListOutlined,
 } from '@ant-design/icons'
 import { Button, Menu, Switch } from 'antd'
@@ -59,16 +57,6 @@ function AppLayout() {
         className={`${styles.topMenu} ${isSide ? styles.topMenuHidden : ''} border-0`}
       />
       <div className={`${styles.headerActions} flex shrink-0 items-center gap-2 text-sm ${isDark ? 'text-gray-300' : 'text-gray-500'}`}>
-        <span className="inline-flex items-center gap-2">
-          <Switch
-            checked={isDark}
-            onChange={(checked) => setAppState({ darkMode: checked, theme: checked ? 'dark' : 'light' })}
-            checkedChildren={<MoonOutlined />}
-            unCheckedChildren={<SunOutlined />}
-            aria-label="切换主题模式"
-          />
-          <span className="hidden sm:inline">主题</span>
-        </span>
         <span className={`${styles.desktopLayoutToggle} items-center gap-2`}>
           <Switch
             checked={isSide}

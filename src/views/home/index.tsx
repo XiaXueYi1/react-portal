@@ -68,7 +68,7 @@ export default function Home() {
   }, [navigate, prompt])
 
   return (
-    <div className="relative size-full overflow-y-auto bg-slate-950">
+    <div className="relative size-full overflow-y-auto bg-slate-100">
       <div
         className="absolute inset-0"
         style={{

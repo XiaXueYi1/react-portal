@@ -537,8 +537,8 @@ function Chat() {
     // ==================== 渲染 ====================
 
     return (
-        <div className="chat-shell min-h-0 flex-1 overflow-auto bg-slate-50 p-3 md:p-5">
-            <div className="grid min-h-full gap-3 lg:h-full lg:min-h-0 lg:grid-cols-[280px_minmax(0,1fr)] lg:gap-4 xl:grid-cols-[300px_minmax(0,1fr)]">
+        <div className="chat-shell min-h-0 flex-1 overflow-hidden bg-slate-50 p-3 md:p-5">
+            <div className="grid h-full min-h-0 grid-rows-[auto_minmax(0,1fr)] gap-3 lg:grid-cols-[280px_minmax(0,1fr)] lg:grid-rows-none lg:gap-4 xl:grid-cols-[300px_minmax(0,1fr)]">
                 {/* 左侧：会话侧边栏 */}
                 <ConversationSidebar
                     loading={loadingConversations}
@@ -551,7 +551,7 @@ function Chat() {
                 />
 
                 {/* 右侧：对话主体 */}
-                <section className="flex min-h-[58dvh] flex-col overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-[0_20px_80px_rgba(15,23,42,0.08)] lg:min-h-0 lg:rounded-[28px]">
+                <section className="flex min-h-0 flex-col overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-[0_20px_80px_rgba(15,23,42,0.08)] lg:rounded-[28px]">
                     {/* 顶部标题栏 */}
                     <div className="flex items-center justify-between gap-3 border-b border-slate-200/80 px-4 py-3 sm:px-6 sm:py-4">
                         <div className="min-w-0">
